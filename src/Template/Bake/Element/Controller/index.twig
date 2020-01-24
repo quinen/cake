@@ -1,0 +1,61 @@
+{#
+/**
+ * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
+ * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ *
+ * Licensed under The MIT License
+ * For full copyright and license information, please see the LICENSE.txt
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @link          http://cakephp.org CakePHP(tm) Project
+ * @since         2.0.0
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ */
+#}
+{% set belongsTo = Bake.aliasExtractor(modelObj, 'BelongsTo') %}
+{% set belongsToMany = Bake.aliasExtractor(modelObj, 'belongsToMany') %}
+{% set compact = [] %}
+
+    /**
+     * Index method
+     *
+     * @return \Cake\Http\Response|void
+     */
+    public function index()
+    {
+{#
+LEGACY
+{% set belongsTo = Bake.aliasExtractor(modelObj, 'BelongsTo') %}
+{% if belongsTo %}
+        $this->paginate = [
+            'contain' => [{{ Bake.stringifyList(belongsTo, {'indent': false})|raw }}]
+        ];
+{% endif %}
+#}
+        $this->paginate += [
+            'finder' => [
+                'search' => $this->request->getQuery() + []
+            ]
+        ];
+
+        ${{ pluralName }} = $this->paginate($this->{{ currentModelName }});
+
+        $this->set(compact('{{ pluralName }}'));
+
+        if ($this->request->is('ajax')) {
+            $this->render('/Element/{{ currentModelName }}/list');
+        } else {
+            // lists for form search
+{% for assoc in belongsTo|merge(belongsToMany) %}
+    {%- set otherName = Bake.getAssociatedTableAlias(modelObj, assoc) %}
+    {%- set otherPlural = otherName|variable %}
+            ${{ otherPlural }} = $this->{{ currentModelName }}->{{ otherName }}->find('list');
+    {{- "\n" }}
+    {%- set compact = compact|merge(["'#{otherPlural}'"]) %}
+{% endfor %}
+{%- if compact|length>0  %}
+            $this->set(compact({{ compact|join(', ')|raw }}));
+{% endif %}
+        }
+    }

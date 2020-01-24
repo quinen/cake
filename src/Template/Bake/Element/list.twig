@@ -1,0 +1,54 @@
+<?php
+/**
+ * @var \{{ namespace }}\View\AppView $this
+ * @var \{{ entityClass }}[]|\Cake\Collection\CollectionInterface ${{ pluralVar }}
+ */
+
+$maps = [
+{% for field in fields %}
+    {% set label = modelObject.getUiFieldLabel(field) %}
+    {% set isKey = false %}
+    {% if associations.BelongsTo %}
+        {% for alias, details in associations.BelongsTo if field == details.foreignKey %}
+            {% set isKey = true %}
+
+    [
+{#/* {{ details|json_encode(constant('JSON_PRETTY_PRINT'))|raw }} */#}
+        'label' => '{{ label }}',
+        'field' => '{{ details.property }}.{{ details.displayField }}',
+        'format' => [[$this->Html, 'link'], [
+            'controller' => '{{ details.controller }}',
+            'action' => 'view',
+            '{{ '{{' }}{{ field }}{{ '}}' }}'
+        ]],
+        'hide' => $this->request->getParam('controller') === '{{ details.controller }}'
+    ],
+        {% endfor %}
+    {% endif %}
+    {% if isKey is not same as(true) %}
+        {% set columnData = Bake.columnData(field, schema) %}
+        {% if columnData.type not in ['integer', 'float', 'decimal', 'biginteger', 'smallinteger', 'tinyinteger'] %}
+
+    [
+        'label' => '{{ label }}',
+        'field' => '{{ field }}',
+    ],
+        {% else %}
+
+    [
+        'label' => '{{ label }}',
+        'field' => '{{ field }}',
+        'format' => [[$this->Number,'format']]
+    ],
+        {% endif %}
+    {% endif %}
+{% endfor %}
+
+    [
+        'label' => ['Actions', ['class' => 'text-center']],
+        'field' => ['{{ primaryKey[0] }}',['class' => 'text-center']],
+        'format' => [[$this->Bs4, 'buttonsField'], ['view', 'edit', 'delete']]
+    ]
+];
+
+echo $this->Bs4->table(${{ pluralVar }}, $maps);

@@ -1,0 +1,44 @@
+<?php
+/**
+ * @var \{{ namespace }}\View\AppView $this
+ * @var \{{ entityClass }}[]|\Cake\Collection\CollectionInterface ${{ pluralVar }}
+ */
+
+echo $this->Form->create(null, [
+    'type' => 'get',
+    'valueSources' => ['query', 'context']
+]);
+
+/** @var array $parent */
+echo $this->Form->controls([
+{% for field in fields %}
+    {% set label = modelObject.getUiFieldLabel(field) %}
+    {% set isKey = false %}
+    {% if associations.BelongsTo %}
+        {% for alias, details in associations.BelongsTo if field == details.foreignKey %}
+            {% set isKey = true %}
+{#/* {{ details|json_encode(constant('JSON_PRETTY_PRINT'))|raw }} */#}
+
+    '{{ field }}' => [
+        'label' => '{{ label }}',
+        'options' => ${{ details.variable }},
+        'empty' => '*'
+    ],
+        {% endfor %}
+    {% endif %}
+    {% if isKey is not same as(true) %}
+
+    '{{ field }}' => [
+        'label' => '{{ label }}',
+    ],
+    {% endif %}
+{% endfor %}
+], [
+    'legend' => false
+]);
+
+echo $this->Bs4->submitRow(['button' => 'search']);
+
+echo $this->Form->end();
+
+

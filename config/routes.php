@@ -5,7 +5,7 @@ use Cake\Routing\Route\DashedRoute;
 
 Router::plugin(
     'QuinenCake',
-    ['path' => '/quinen-cake'],
+    ['path' => '/quinen'],
     function (RouteBuilder $routes) {
         $routes->fallbacks(DashedRoute::class);
     }

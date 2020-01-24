@@ -1,0 +1,64 @@
+<?php
+use Cake\Utility\Hash;
+
+/**
+ * @var \{{ namespace }}\View\AppView $this
+ * @var \{{ entityClass }} ${{ singularVar }}
+ */
+
+echo $this->Html->div('tab-link-title', $this->Html->iconText('eye', Hash::get(${{ singularVar }}, '{{ displayField }}')));
+
+$maps = [
+{% set associations = {'BelongsTo': [], 'HasOne': [], 'HasMany': [], 'BelongsToMany': []}|merge(associations) %}
+{#}{ associations|json_encode(constant('JSON_PRETTY_PRINT'))|raw }#}
+{% set fieldsData = Bake.getViewFieldsData(fields, schema, associations) %}
+{#}{ fieldsData|json_encode(constant('JSON_PRETTY_PRINT'))|raw }#}
+{% set associationFields = fieldsData.associationFields %}
+{% set groupedFields = fieldsData.groupedFields %}
+{% if groupedFields['string'] %}
+    {% for field in groupedFields['string'] %}
+        {% set label = modelObject.getUiFieldLabel(field) %}
+        {% if associationFields[field] %}
+            {% set details = associationFields[field] %}
+
+    [
+        'label' => '{{ label }}',
+        'field' => '{{ details.property }}.{{ details.displayField }}',
+        'format' => [[$this->Html, 'link'], ['controller' => '{{ details.controller }}', 'action' => 'view', '{{ '{{' }}{{ field }}{{ '}}' }}']]
+    ],
+        {% else %}
+
+    [
+        'label' => '{{ label }}',
+        'field' => '{{ field }}',
+    ],
+        {% endif %}
+    {% endfor %}
+{% endif %}
+{% if groupedFields.number %}
+    {% for field in groupedFields.number %}
+        {% set label = modelObject.getUiFieldLabel(field) %}
+
+    [
+        'label' => '{{ label }}',
+        'field' => '{{ field }}',
+        'format' => [[$this->Number,'format']]
+    ],
+    {% endfor %}
+{% endif %}
+];
+
+echo $this->Bs4->row([
+    $this->Html->div('float-right',
+        $this->Bs4->buttons([
+            'edit',
+            'delete',
+        ], [], [Hash::get(${{ singularVar }}, '{{ primaryKey[0] }}')]
+        )
+    )
+]);
+
+echo $this->Bs4->dl(${{ singularVar }}, $maps, [
+    {#'model' => '{{ modelClass }}',#}
+    'nbCols' => 1
+]);

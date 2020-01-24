@@ -1,0 +1,91 @@
+<?php
+/**
+ * @var \{{ namespace }}\View\AppView $this
+ * @var \{{ entityClass }} ${{ singularVar }}
+ */
+
+use Cake\Utility\Hash;
+
+echo $this->Html->div(
+    'tab-link-title',
+    $this->Html->iconText(
+{% if strpos(action, 'add') is same as(false) %}
+        'pencil-alt',
+        [
+            Hash::get(${{ singularVar }}, '{{ displayField }}'),
+            [
+                'data-from-input-value' => '{{ displayField }}'
+            ]
+        ],
+        [
+            'preText' => 'Modifier'
+        ]
+{% else %}
+        'plus',
+        [
+            Hash::get(${{ singularVar }}, '{{ displayField }}').'',
+            [
+                'data-from-input-value' => '{{ displayField }}'
+            ]
+        ],
+        [
+            'preText' => 'Ajouter'
+        ]
+{% endif %}
+    )
+);
+
+{% if strpos(action, 'add') is same as(false) %}
+echo $this->Bs4->row([
+    $this->Html->div('float-right',
+        $this->Bs4->buttons([
+            'view',
+            'delete',
+        ], [], [Hash::get(${{ singularVar }}, '{{ primaryKey[0] }}')]
+        )
+    )
+], ['class' => 'mb-3']);
+
+{% endif %}
+echo $this->Form->create(${{ singularVar }},[
+    'valueSources' => ['query', 'context']
+]);
+
+{% set fields = Bake.filterFields(fields, schema, modelObject) %}
+echo $this->Form->controls([
+{%- for field in fields if field not in primaryKey %}
+{%- set label = modelObject.getUiFieldLabel(field) %}
+{%- if keyFields[field] %}
+
+    /** @var array ${{ keyFields[field] }} */
+    '{{ field }}' => [
+        'label' => '{{ label }}',
+        'options' => ${{ keyFields[field] }},
+        'empty' => '*'
+    ],
+
+{%- elseif field not in ['created', 'modified', 'updated'] %}
+    {%- set fieldData = Bake.columnData(field, schema) %}
+    {#}{ fieldData|json_encode(constant('JSON_PRETTY_PRINT'))|raw }#}
+    {%- if fieldData.type in ['boolean'] %}
+
+    '{{ field }}' => [
+        'type' => 'checkbox',
+        'label' => '{{ label }}',
+    ],
+
+    {%- else %}
+
+    '{{ field }}' => [
+        'label' => '{{ label }}',
+    ],
+
+    {%- endif %}
+{%- endif %}
+{%- endfor %}
+
+], [
+    'legend' => false
+]);
+echo $this->Bs4->submitRow(['button'=>$this->request->getParam('action'),'type'=>'submit','link'=>false]);
+echo $this->Form->end();
