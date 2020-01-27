@@ -2,13 +2,13 @@
 
 namespace QuinenCake\View\Helper;
 
-use QuinenLib\Tools;
 use Cake\Utility\Inflector;
 use Cake\Utility\Text;
+use QuinenLib\Tools;
 
 trait LinkTrait
 {
-    public $linkDefaults = [
+    private $linkDefaults = [
         'ajaxLink' => false,
         'link' => false,
         'modalLink' => false,
@@ -16,6 +16,8 @@ trait LinkTrait
         'tabLink' => false,
         'trLink' => false,
     ];
+
+    private $linkFunctionPlugin = 'QuinenCake';
 
     public function linkify($content, array $options = [], array $injectLinkOptions = [])
     {
@@ -118,13 +120,12 @@ trait LinkTrait
     {
         list($ajax, $ajaxOptions) = $this->getContentOptions($options['ajaxLink']);
 
-
         $ajaxOptions += [
             'id' => Text::uuid(),
             'url' => $this->Url->build($ajax),
-            'beforeSend' => 'AdminUi.onBeforeSendAjaxLink',
-            'success' => 'AdminUi.onSuccessAjaxLink',
-            'error' => 'AdminUi.onErrorAjaxLink',
+            'beforeSend' => $this->linkFunctionPlugin . '.onBeforeSendAjaxLink',
+            'success' => $this->linkFunctionPlugin . '.onSuccessAjaxLink',
+            'error' => $this->linkFunctionPlugin . '.onErrorAjaxLink',
         ];
 
         $functionOptions = [
@@ -133,10 +134,9 @@ trait LinkTrait
             'error' => 'xhr,status,error'
         ];
 
-
         // on enrobe le nom des fonctions dans une fonction anonyme
         $ajaxOptions = collection($ajaxOptions)->filter(function ($v, $k) use ($functionOptions) {
-                return in_array($k, array_keys($functionOptions));
+                return array_key_exists($k, $functionOptions);
             })->map(function ($option, $k) use ($functionOptions) {
                 return 'function(' . $functionOptions[$k] . '){return ' . $option .
                     '($event,' . $functionOptions[$k] . ');}';
@@ -173,9 +173,9 @@ trait LinkTrait
         list($modal, $modalOptions) = $this->getContentOptions($options[$key]);
 
         $modalOptions += [
-            'beforeSend' => 'AdminUi.onBeforeSendModalLink',
-            'success' => 'AdminUi.onSuccessModalLink',
-            'error' => 'AdminUi.onErrorAjaxLink',
+            'beforeSend' => $this->linkFunctionPlugin . '.onBeforeSendModalLink',
+            'success' => $this->linkFunctionPlugin . '.onSuccessModalLink',
+            'error' => $this->linkFunctionPlugin . '.onErrorAjaxLink',
         ];
 
         $options['ajaxLink'] = [$modal, $modalOptions];
@@ -190,9 +190,9 @@ trait LinkTrait
         list($tab, $tabOptions) = $this->getContentOptions($options['tabLink']);
 
         $tabOptions += [
-            'beforeSend' => 'AdminUi.onBeforeSendTabLink',
-            'success' => 'AdminUi.onSuccessTabLink',
-            'error' => 'AdminUi.onErrorAjaxLink',
+            'beforeSend' => $this->linkFunctionPlugin . '.onBeforeSendTabLink',
+            'success' => $this->linkFunctionPlugin . '.onSuccessTabLink',
+            'error' => $this->linkFunctionPlugin . '.onErrorAjaxLink',
             'data-show-on-click' => true,
         ];
 
@@ -210,9 +210,9 @@ trait LinkTrait
         list($tr, $trOptions) = $this->getContentOptions($options['trLink']);
 
         $trOptions += [
-            'beforeSend' => 'AdminUi.onBeforeSendTrLink',
-            'success' => 'AdminUi.onSuccessTrLink',
-            'error' => 'AdminUi.onErrorAjaxLink',
+            'beforeSend' => $this->linkFunctionPlugin . '.onBeforeSendTrLink',
+            'success' => $this->linkFunctionPlugin . '.onSuccessTrLink',
+            'error' => $this->linkFunctionPlugin . '.onErrorAjaxLink',
         ];
 
         $options['ajaxLink'] = [$tr, $trOptions];
@@ -238,8 +238,8 @@ trait LinkTrait
         }
 
         $linkDefault = [
-            'plugin' => $this->request->getParam('plugin'),
-            'controller' => $this->request->getParam('controller'),
+            'plugin' => $this->getRequest()->getParam('plugin'),
+            'controller' => $this->getRequest()->getParam('controller'),
             'action' => 'index',
         ];
 
