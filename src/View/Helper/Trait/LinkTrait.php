@@ -116,7 +116,7 @@ trait LinkTrait
         return [$content, $options];
     }
 
-    public function ajaxLinkToLink($options = [])
+    private function ajaxLinkToLink($options = [])
     {
         list($ajax, $ajaxOptions) = $this->getContentOptions($options['ajaxLink']);
 
@@ -165,7 +165,7 @@ trait LinkTrait
         return $options;
     }
 
-    public function modalLinkToAjaxLink($options = [])
+    private function modalLinkToAjaxLink($options = [])
     {
         $key = 'modalLink';
         $this->checkContentOptions($options[$key]);
@@ -185,7 +185,7 @@ trait LinkTrait
         return $options;
     }
 
-    public function tabLinkToAjaxLink($options = [])
+    private function tabLinkToAjaxLink($options = [])
     {
         list($tab, $tabOptions) = $this->getContentOptions($options['tabLink']);
 
@@ -203,7 +203,7 @@ trait LinkTrait
         return $options;
     }
 
-    public function trLinkToAjaxLink($options = [])
+    private function trLinkToAjaxLink($options = [])
     {
         $this->checkContentOptions($options['trLink']);
 
