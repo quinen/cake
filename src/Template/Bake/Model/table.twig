@@ -58,23 +58,23 @@ class {{ name }}Table extends {{ connectionName }}Table
 {% endif %}
 
 {%- if displayField %}
-    $this->setDisplayField('{{ displayField }}');
+        $this->setDisplayField('{{ displayField }}');
 {% endif %}
 
-$this->setUiLabel('{{ name }}');
-$this->setUiIcon('question');
+        $this->setUiLabel('{{ name }}');
+        $this->setUiIcon('question');
 
-$this->setUiFieldsLabel([
+        $this->setUiFieldsLabel([
 {% for field in fields %}
-    '{{ field }}' => '{{ field|humanize }}',
+            '{{ field }}' => '{{ field|humanize }}',
 {% endfor %}
-]);
+        ]);
 {% if behaviors %}
 
 {% endif %}
 
 {%- for behavior, behaviorData in behaviors %}
-    $this->addBehavior('{{ behavior }}'{{ (behaviorData ? (", [" ~ Bake.stringifyList(behaviorData, {'indent': 3, 'quotes': false})|raw ~ ']') : '')|raw }});
+        $this->addBehavior('{{ behavior }}'{{ (behaviorData ? (", [" ~ Bake.stringifyList(behaviorData, {'indent': 3, 'quotes': false})|raw ~ ']') : '')|raw }});
 {% endfor %}
 
 {%- if associations.belongsTo or associations.hasMany or associations.belongsToMany %}
@@ -149,7 +149,7 @@ $this->setUiFieldsLabel([
     */
     public static function defaultConnectionName()
     {
-    return '{{ connection }}';
+        return '{{ connection }}';
     }
 {%- endif %}
 
