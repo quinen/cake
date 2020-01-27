@@ -10,7 +10,7 @@ use Cake\Utility\Inflector;
  *
  * add label icon and gender option to a model
  *
- * @package AdminUi\Model\Table
+ * @package QuinenCake\Model\Table
  */
 trait UiTrait
 {
