@@ -62,16 +62,22 @@ trait Bs4NavbarTrait
             }
 
             list($element, $elementOptions) = $this->Html->getIconText($elementOptions + ['text' => $element]);
-
             // linkify
             if ($this->Html->isLinkExistInOptions($elementOptions)) {
-                list($element, $elementOptions) = $this->Html->linkify($element, $elementOptions, ['class' => "nav-link"]);
+                list($element, $elementOptions) = $this->Html->linkify($element, $elementOptions,
+                    ['class' => "nav-link"]);
             } else {
                 if (isset($elementOptions['list'])) {
-                    $button = [false, ['text' => $element, 'color' => $options['bg']]];
-                    $elementOptions = $this->Html->addClass($elementOptions, 'dropdown');
-                    $element = $this->dropdown($button, $elementOptions['list'], ['inDiv' => false]);
+
+                    $list = $elementOptions['list'];
                     unset($elementOptions['list']);
+
+                    $button = [false, $elementOptions + ['text' => $element, 'color' => $options['bg']]];
+                    unset($elementOptions['title']);
+
+                    $elementOptions = $this->Html->addClass($elementOptions, 'dropdown');
+                    $element = $this->dropdown($button, $list, ['inDiv' => false]);
+
                 } else {
                     $element = $this->Html->div('navbar-text', $element);
                 }

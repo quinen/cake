@@ -1,0 +1,237 @@
+.table-xs th,
+.table-xs td {
+    padding: 0.1rem;
+}
+
+/*navTab title for navTabInCard*/
+.nav-link.navbar-text {
+    cursor: default;
+    padding-left: 0.5rem;
+    padding-top: 0.25rem;
+}
+
+.nav-link.navbar-text:hover {
+    border-color: transparent;
+}
+
+.tab-link-title {
+    display: none;
+}
+
+.xs-gutters {
+    margin-right: 0;
+    margin-left: 0;
+}
+
+.xs-gutters > .col,
+.xs-gutters > [class*="col-"] {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+.col-1-5, .col-4-5, .col-7-5, .col-10-5 {
+    position: relative;
+    width: 100%;
+    min-height: 1px;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+.col-1-5 {
+    -ms-flex: 0 0 12.5%;
+    flex: 0 0 12.5%;
+    max-width: 12.5%;
+}
+
+.col-4-5 {
+    -ms-flex: 0 0 37.5%;
+    flex: 0 0 37.5%;
+    max-width: 37.5%;
+}
+
+.col-7-5 {
+    -ms-flex: 0 0 62.5%;
+    flex: 0 0 62.5%;
+    max-width: 62.5%;
+}
+
+.col-10-5 {
+    -ms-flex: 0 0 87.5%;
+    flex: 0 0 87.5%;
+    max-width: 87.5%;
+}
+/*
+.card > .card-body {
+    padding: 0.75rem;
+    padding: 0rem;
+}
+*/
+/* bouton sur card header */
+.btn-xs, .btn-group-xs > .btn {
+    padding: 0.1rem 0.5rem;
+}
+
+/* card-header buttons*/
+.pr-2-5 {
+    padding-right: 0.75rem !important;
+}
+
+.pb-1-5, py-1-5 {
+    padding-bottom: .375rem !important;
+}
+
+.pt-1-5, py-1-5 {
+    padding-top: .375rem !important;
+}
+
+.btn {
+    font-size: 0.8rem;
+}
+
+/* colors */
+
+.btn-danger {
+    color: #fff;
+    background-color: #d9534f;
+    border-color: #d43f3a;
+}
+
+.btn-warning {
+    color: #fff;
+    background-color: #eb9947;
+    border-color: #eb9947;
+}
+
+.btn-warning:hover {
+    color: #fff;
+    background-color: #cc6600;
+    border-color: #cc6600;
+}
+
+.btn-outline-warning:not(:disabled):not(.disabled).active, .btn-outline-warning:not(:disabled):not(.disabled):active, .show > .btn-outline-warning.dropdown-toggle {
+    color: #fff;
+    background-color: #eb9947;
+    border-color: #eb9947;
+}
+
+.btn-success {
+    color: #fff;
+    background-color: #5cb85c;
+    border-color: #4cae4c;
+}
+
+.btn-outline-success:not(:disabled):not(.disabled).active, .btn-outline-success:not(:disabled):not(.disabled):active, .show > .btn-outline-success.dropdown-toggle {
+    color: #fff;
+    background-color: #5cb85c;
+    border-color: #4cae4c;
+}
+
+.btn-info {
+    color: #fff;
+    background-color: #5bc0de;
+    border-color: #46b8da;
+}
+
+.btn-outline-info:not(:disabled):not(.disabled).active, .btn-outline-info:not(:disabled):not(.disabled):active, .show > .btn-outline-info.dropdown-toggle {
+    color: #fff;
+    background-color: #5bc0de;
+    border-color: #46b8da;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #337ab7;
+    border-color: #2e6da4;
+}
+
+/* labels for radio button */
+.form-check-input {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* checkbox as toggle button with font awesome */
+
+input[type="checkbox"] {
+    position: relative;
+
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+
+    font-family: 'Font Awesome 5 Free', monospace;
+    font-weight: 900;
+
+    width: 1.5rem;
+    height: 0;
+
+    margin: 0;
+    padding: 0;
+    line-height: 0;
+
+    font-size: 2rem;
+
+    border: 0px pink solid;
+    outline: none;
+}
+
+input[type="checkbox"]:before {
+    content: "\f205";
+
+    color: darkgrey;
+    transform: rotate(180deg);
+    display: inline-block;
+
+    height: 0;
+    line-height: 0;
+
+    margin-left: -1rem;
+
+    border: 0 blue solid;
+}
+
+input[type="checkbox"]:checked::before {
+
+    content: "\f205";
+
+    color: green;
+    transform: rotate(0deg);
+}
+
+.dropdown-submenu {
+    position: relative;
+}
+
+.dropdown-submenu a::after {
+    transform: rotate(-90deg);
+    position: absolute;
+    right: 6px;
+    top: .8em;
+}
+
+.dropdown-submenu .dropdown-menu {
+    top: 0;
+    left: 100%;
+    margin-left: .1rem;
+    margin-right: .1rem;
+}
+
+.list-group-item {
+    border-width: 0.1em;
+}
+
+tr.align-middle > td {
+    vertical-align: middle !important;
+}
+
+.row.align-middle > .col {
+    vertical-align: middle !important;
+}
+
+.modal-xxl {
+    max-width: 98%;
+}
+
+.link-modal-title {
+    display: none;
+}
