@@ -4,6 +4,7 @@ namespace QuinenCake\View\Helper;
 
 use Cake\Utility\Inflector;
 use Cake\Utility\Text;
+use Cake\View\Exception\MissingHelperException;
 use QuinenLib\Tools;
 
 trait LinkTrait
@@ -18,6 +19,7 @@ trait LinkTrait
     ];
 
     private $linkFunctionPlugin = 'QuinenCake';
+    private $linkContent = [];
 
     public function linkify($content, array $options = [], array $injectLinkOptions = [])
     {
@@ -71,7 +73,7 @@ trait LinkTrait
             unset($injectLinkOptions[$key]);
 
             // take the link
-            list($linkContent, $linkOptions) = $this->getContentOptions($options[$key]);
+            list($this->linkContent, $linkOptions) = $this->getContentOptions($options[$key]);
 
             // eliminate the key no longer useful
             unset($options[$key]);
@@ -85,24 +87,23 @@ trait LinkTrait
             // inject before link for surcharge, ex : confirm on postLink
             $linkOptions = $injectLinkOptions + $linkOptions + ['escape' => false];
 
-            if ($linkContent === false) {
+            if ($this->linkContent === false) {
                 $content = $this->tag(
                     'a',
                     $content,
                     $linkOptions
                 );
             } else {
-                if ($this->getView()->Auth->check($linkContent) ||
-                    (isset($linkContent['_access']) && $linkContent['_access'])
-                ) {
-                    if (is_array($linkContent)) {
-                        unset($linkContent['_access']);
+
+                if ($this->linkCheckAccess()) {
+                    if (is_array($this->linkContent)) {
+                        unset($this->linkContent['_access']);
                     }
 
                     $content = \call_user_func(
                         $linkCallback[$key],
                         $content,
-                        $linkContent,
+                        $this->linkContent,
                         $linkOptions
                     );
                 } else {
@@ -165,61 +166,19 @@ trait LinkTrait
         return $options;
     }
 
-    private function modalLinkToAjaxLink($options = [])
+    private function linkCheckAccess()
     {
-        $key = 'modalLink';
-        $this->checkContentOptions($options[$key]);
+        try {
+            $auth = $this->getView()->Auth;
+            $isAuthCheck = $auth->check($this->linkContent);
+        } catch (MissingHelperException $e) {
+            // pas de helper Auth
+            $isAuthCheck = true;
+        }
 
-        list($modal, $modalOptions) = $this->getContentOptions($options[$key]);
+        $isLinkAccess = (isset($this->linkContent['_access']) && $this->linkContent['_access']);
 
-        $modalOptions += [
-            'beforeSend' => $this->linkFunctionPlugin . '.onBeforeSendModalLink',
-            'success' => $this->linkFunctionPlugin . '.onSuccessModalLink',
-            'error' => $this->linkFunctionPlugin . '.onErrorAjaxLink',
-        ];
-
-        $options['ajaxLink'] = [$modal, $modalOptions];
-
-        unset($options[$key]);
-
-        return $options;
-    }
-
-    private function tabLinkToAjaxLink($options = [])
-    {
-        list($tab, $tabOptions) = $this->getContentOptions($options['tabLink']);
-
-        $tabOptions += [
-            'beforeSend' => $this->linkFunctionPlugin . '.onBeforeSendTabLink',
-            'success' => $this->linkFunctionPlugin . '.onSuccessTabLink',
-            'error' => $this->linkFunctionPlugin . '.onErrorAjaxLink',
-            'data-show-on-click' => true,
-        ];
-
-        $options['ajaxLink'] = [$tab, $tabOptions];
-
-        unset($options['tabLink']);
-
-        return $options;
-    }
-
-    private function trLinkToAjaxLink($options = [])
-    {
-        $this->checkContentOptions($options['trLink']);
-
-        list($tr, $trOptions) = $this->getContentOptions($options['trLink']);
-
-        $trOptions += [
-            'beforeSend' => $this->linkFunctionPlugin . '.onBeforeSendTrLink',
-            'success' => $this->linkFunctionPlugin . '.onSuccessTrLink',
-            'error' => $this->linkFunctionPlugin . '.onErrorAjaxLink',
-        ];
-
-        $options['ajaxLink'] = [$tr, $trOptions];
-
-        unset($options['trLink']);
-
-        return $options;
+        return $isAuthCheck || $isLinkAccess;
     }
 
     public function storeContentLink($content, $link)
@@ -275,5 +234,62 @@ trait LinkTrait
         return !collection($options)->filter(function ($v, $k) use ($keys) {
             return in_array($k, $keys, true) && $v;
         })->isEmpty();
+    }
+
+    private function modalLinkToAjaxLink($options = [])
+    {
+        $key = 'modalLink';
+        $this->checkContentOptions($options[$key]);
+
+        list($modal, $modalOptions) = $this->getContentOptions($options[$key]);
+
+        $modalOptions += [
+            'beforeSend' => $this->linkFunctionPlugin . '.onBeforeSendModalLink',
+            'success' => $this->linkFunctionPlugin . '.onSuccessModalLink',
+            'error' => $this->linkFunctionPlugin . '.onErrorAjaxLink',
+        ];
+
+        $options['ajaxLink'] = [$modal, $modalOptions];
+
+        unset($options[$key]);
+
+        return $options;
+    }
+
+    private function tabLinkToAjaxLink($options = [])
+    {
+        list($tab, $tabOptions) = $this->getContentOptions($options['tabLink']);
+
+        $tabOptions += [
+            'beforeSend' => $this->linkFunctionPlugin . '.onBeforeSendTabLink',
+            'success' => $this->linkFunctionPlugin . '.onSuccessTabLink',
+            'error' => $this->linkFunctionPlugin . '.onErrorAjaxLink',
+            'data-show-on-click' => true,
+        ];
+
+        $options['ajaxLink'] = [$tab, $tabOptions];
+
+        unset($options['tabLink']);
+
+        return $options;
+    }
+
+    private function trLinkToAjaxLink($options = [])
+    {
+        $this->checkContentOptions($options['trLink']);
+
+        list($tr, $trOptions) = $this->getContentOptions($options['trLink']);
+
+        $trOptions += [
+            'beforeSend' => $this->linkFunctionPlugin . '.onBeforeSendTrLink',
+            'success' => $this->linkFunctionPlugin . '.onSuccessTrLink',
+            'error' => $this->linkFunctionPlugin . '.onErrorAjaxLink',
+        ];
+
+        $options['ajaxLink'] = [$tr, $trOptions];
+
+        unset($options['trLink']);
+
+        return $options;
     }
 }

@@ -144,8 +144,7 @@ class UiHelper extends Helper
 
     public function getTitle($isPlural = true, $pluginController = null, $options = [])
     {
-
-
+        //$this->clearSession();
         $table = $this->getTable($pluginController);
         $iconName = 'question-sign';
         if (method_exists($table, 'getUiIcon')) {
