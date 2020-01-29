@@ -27,30 +27,6 @@ trait Bootstrap4Trait
         return $this->Html->tag('div', $html, $options);
     }
 
-    public function table($datas, $maps = [], $options = [])
-    {
-        $options += [
-            'size' => 'xs', // xs, sm
-        ];
-
-        if ($options['size']) {
-            $options['is' . ucfirst($options['size'])] = true;
-        }
-        unset($options['size']);
-
-        $options = $this->addClassFromBooleanOptions(
-            $options,
-            ['sm', 'dark', 'xs'],
-            ['prefix' => "table"]
-        );
-        /*
-                $maps = collection($maps)->map(function($map){
-                    return $this->addClass($map,'col');
-                })->toArray();
-        */
-        return $this->bootstrapTable($datas, $maps, $options);
-    }
-
     public function formatBoolean($value, $options = [])
     {
         $options += [
@@ -102,13 +78,13 @@ trait Bootstrap4Trait
             ]
         );
 
-        list($tag,$tagOptions) = $this->getContentOptions($options['tag']);
+        list($tag, $tagOptions) = $this->getContentOptions($options['tag']);
         unset($options['tag']);
 
         $html = $this->Html->tag('span', $content, $options);
 
         if ($tag) {
-            $html = $this->Html->tag($tag, $html,$tagOptions);
+            $html = $this->Html->tag($tag, $html, $tagOptions);
         }
 
         return $html;
@@ -119,6 +95,50 @@ trait Bootstrap4Trait
     public function valueFalse($text = 'Non', $options = [])
     {
         return $this->badge('danger', $this->Html->iconText('times', $text), $options);
+    }
+
+    public function alert($model = false, $content = null, $options = [])
+    {
+
+        $modelOptions = [
+            'primary',
+            'secondary',
+            'success',
+            'info',
+            'warning',
+            'danger',
+            'light',
+            'dark'
+        ];
+
+        $options += [
+            'alert' => 'light',
+            'role' => 'alert',
+            'isDismissible' => true
+        ];
+
+        if (!$model || !in_array($model, $modelOptions)) {
+            $model = $options['alert'];
+        }
+        unset($options['alert']);
+
+        $options = $this->addClass($options, 'mx-auto alert alert-' . $model);
+
+        if ($options['isDismissible']) {
+            $options = $this->addClass($options, 'alert-dismissible fade show');
+            $content .= $this->button([
+                'color' => false,
+                'class' => 'close',
+                'data-dismiss' => 'alert',
+                'aria-label' => 'Fermer',
+                'text' => $this->Html->tag('span', '&times;', [
+                    'aria-hidden' => 'true'
+                ])
+            ]);
+        }
+        unset($options['isDismissible']);
+
+        return $this->Html->tag('div', $content, $options);
     }
 
     public function formatIcon($value)
@@ -291,6 +311,30 @@ trait Bootstrap4Trait
     public function setCurrentContext($context)
     {
         return $this->Html->setCurrentContext($context);
+    }
+
+    public function table($datas, $maps = [], $options = [])
+    {
+        $options += [
+            'size' => 'xs', // xs, sm
+        ];
+
+        if ($options['size']) {
+            $options['is' . ucfirst($options['size'])] = true;
+        }
+        unset($options['size']);
+
+        $options = $this->addClassFromBooleanOptions(
+            $options,
+            ['sm', 'dark', 'xs'],
+            ['prefix' => "table"]
+        );
+        /*
+                $maps = collection($maps)->map(function($map){
+                    return $this->addClass($map,'col');
+                })->toArray();
+        */
+        return $this->bootstrapTable($datas, $maps, $options);
     }
 
     public function listgroup($list, $options = [], $optionsItem = [])
