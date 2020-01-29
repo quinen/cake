@@ -8,6 +8,7 @@
 
 namespace QuinenCake\Controller;
 
+use QuinenCake\View\Helper\AuthHelper;
 use QuinenCake\View\Helper\Bs4Helper;
 use QuinenCake\View\Helper\FormHelper;
 use QuinenCake\View\Helper\HtmlHelper;
@@ -46,10 +47,12 @@ trait InitTrait
     public function initUiHelpers($options = [])
     {
         $options += [
-            'html' => HtmlHelper::class
+            'auth' => AuthHelper::class,
+            'html' => HtmlHelper::class,
         ];
 
         $this->viewBuilder()->setHelpers([
+            'Auth' => ['className' => $options['auth']],
             'Html' => ['className' => $options['html']],
             'Ui' => ['className' => UiHelper::class],
         ]);
