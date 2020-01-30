@@ -31,5 +31,6 @@ return [
     // errors
     'inputContainerError' => '{{error}}<div class="form-group form-row {{required}}">{{content}}</div>',
     'error' => '<div class="alert alert-danger">{{content}}</div>',
+    'file' => '<input type="file" name="{{name}}" class="form-control col {{attrs.class}}"{{attrs}}/>',
 
 ];

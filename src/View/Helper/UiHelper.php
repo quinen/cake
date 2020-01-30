@@ -144,17 +144,26 @@ class UiHelper extends Helper
 
     public function getTitle($isPlural = true, $pluginController = null, $options = [])
     {
-        //$this->clearSession();
-        $table = $this->getTable($pluginController);
-        $iconName = 'question-sign';
-        if (method_exists($table, 'getUiIcon')) {
-            $iconName = $this->getTable($pluginController)->getUiIcon();
-        }
+        $iconName = $this->getIconName($pluginController);
         $text = $this->getLabel($isPlural, $pluginController);
         return $this->Html->iconText($iconName, $text, $options);
     }
 
     // getUiFieldLabel
+
+    public function getIconName($pluginController = null)
+    {
+        $sessionKey = self::$sessionKey . '.Models.' . $pluginController . '.icon';
+
+        return $this->getOrSetValueInSession($sessionKey, function () use ($pluginController) {
+            $table = $this->getTable($pluginController);
+            $iconName = 'question-sign';
+            if (method_exists($table, 'getUiIcon')) {
+                $iconName = $table->getUiIcon();
+            }
+            return $iconName;
+        });
+    }
 
     public function getTable($pluginController = null)
     {
@@ -180,11 +189,7 @@ class UiHelper extends Helper
      */
     public function getIcon($pluginController = null)
     {
-        $sessionKey = self::$sessionKey . '.Models.' . $pluginController . '.icon';
-
-        $icon = $this->getOrSetValueInSession($sessionKey, function () use ($pluginController) {
-            return $this->getTable($pluginController)->getUiIcon();
-        });
+        $icon = $this->getIconName($pluginController);
 
         return $this->Html->icon($icon);
     }
