@@ -166,21 +166,20 @@ trait TableTrait
 
     protected function transformCellsForRowspan($maps, $rows)
     {
-        //debug([json_encode($maps), $rows]);
         $nbMaps = count($maps);
         $nbRows = count($rows);
         // pour chaque mapping
-        for ($x = 0; $x < $nbMaps; $x++) {
-            if ($maps[$x]['rowspan']) {
+        for ($colIndex = 0; $colIndex < $nbMaps; $colIndex++) {
+            if ($maps[$colIndex]['rowspan']) {
                 // pour chaque ligne
-                for ($y = 0; $y < $nbRows; $y++) {
+                for ($rowIndex = 0; $rowIndex < $nbRows; $rowIndex++) {
                     $rowspan = 0;
                     do {
                         // ya t'il une valeur apres ?
-                        $isNext = isset($rows[$y + $rowspan][0][$x][0]);
+                        $isNext = isset($rows[$rowIndex + $rowspan][0][$colIndex][0]);
                         if ($isNext) {
                             // cette valeur est elle egale ?
-                            $isEqual = $rows[$y + $rowspan][0][$x][0] == $rows[$y][0][$x][0];
+                            $isEqual = $rows[$rowIndex + $rowspan][0][$colIndex] == $rows[$rowIndex][0][$colIndex];
                             if ($isEqual) {
                                 $rowspan++;
                             }
@@ -189,10 +188,10 @@ trait TableTrait
 
                     // manipulation de la cellule premiere
                     if ($rowspan > 1) {
-                        $rows[$y][0][$x][1] += ['rowspan' => $rowspan];
+                        $rows[$rowIndex][0][$colIndex][1] += ['rowspan' => $rowspan];
                         // on elimine les lignes suivantes inutiles
                         while (--$rowspan > 0) {
-                            unset($rows[$y + $rowspan][0][$x]);
+                            unset($rows[$rowIndex + $rowspan][0][$colIndex]);
                         }
                     }
                 }
