@@ -90,7 +90,9 @@ trait TableTrait
 
         // Tbody    ////////////////////////////////////////////////////////////
         // get value from field and format it
-        $tbodyArray = $this->transformMapsWithDatas($maps, $datas, $options['trOptions']);
+        $tbodyCollection = $this->transformMapsWithDatas($maps, $datas, $options['trOptions']);
+        $tbodyArray = $tbodyCollection->toArray();
+
 
         $tbody = null;
         $isTbody = !empty($tbodyArray);
