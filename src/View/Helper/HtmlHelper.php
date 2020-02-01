@@ -3,7 +3,6 @@
 namespace QuinenCake\View\Helper;
 
 use Cake\View\Helper\HtmlHelper as BaseHelper;
-use QuinenLib\Arrays\CurrentContextTrait;
 
 /**
  * @property \Cake\View\Helper\UrlHelper $Url
@@ -14,7 +13,6 @@ class HtmlHelper extends BaseHelper
     use FontAwesome5Trait {
         fa5 as icon;
     }
-    use CurrentContextTrait;
 
     public function initialize(array $config)
     {
