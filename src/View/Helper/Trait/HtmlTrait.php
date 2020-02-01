@@ -9,7 +9,6 @@
 namespace QuinenCake\View\Helper;
 
 use Cake\Core\Plugin;
-use QuinenLib\Arrays\ContentOptionsTrait;
 use QuinenLib\Arrays\MapTrait;
 
 
@@ -22,11 +21,6 @@ trait HtmlTrait
     use LinkTrait;
     use ListTrait;
     use TableTrait;
-
-
-    // utilities
-    use ContentOptionsTrait;
-
 
     public function getMapCommonOptions()
     {
