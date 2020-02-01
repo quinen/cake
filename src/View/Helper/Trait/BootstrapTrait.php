@@ -9,18 +9,16 @@
 namespace QuinenCake\View\Helper;
 
 use Cake\Utility\Inflector;
-use QuinenLib\Arrays\ContentOptionsTrait;
 use QuinenLib\Arrays\MapTrait;
 
 trait BootstrapTrait
 {
-    use ContentOptionsTrait;
+
     use MapTrait;
 
     public function linkify($content, array $options = [], array $optionsLink = [])
     {
         if (isset($options['link'])) {
-
             list($link, $linkOptions) = $this->getContentOptions($options['link']);
 
             $linkOptions = $this->addClassFromBooleanOptions(
@@ -45,23 +43,25 @@ trait BootstrapTrait
             'prefix' => ""
         ];
 
-        return collection($classes)->reduce(function ($reducer, $class) use ($options) {
-            $booleanString = "is" . Inflector::camelize($class);
+        return collection($classes)->reduce(
+            function ($reducer, $class) use ($options) {
+                $booleanString = "is" . Inflector::camelize($class);
 
-            // ex table options for width 100%
-            if ($options['prefix'] == $class) {
-                $classString = $class;
-            } else {
-                $classString = trim(implode("-", [$options['prefix'], $class]), "-");
-            }
+                // ex table options for width 100%
+                if ($options['prefix'] == $class) {
+                    $classString = $class;
+                } else {
+                    $classString = trim(implode("-", [$options['prefix'], $class]), "-");
+                }
 
-            if (isset($reducer[$booleanString]) && $reducer[$booleanString]) {
-                $reducer = $this->Html->addClass($reducer, $classString, $options['field']);
-            }
-            unset($reducer[$booleanString]);
-            return $reducer;
-        }, $data);
-
+                if (isset($reducer[$booleanString]) && $reducer[$booleanString]) {
+                    $reducer = $this->Html->addClass($reducer, $classString, $options['field']);
+                }
+                unset($reducer[$booleanString]);
+                return $reducer;
+            },
+            $data
+        );
     }
 
     public function table($datas, $maps = [], $options = [])
