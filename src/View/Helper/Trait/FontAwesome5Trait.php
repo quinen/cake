@@ -422,12 +422,40 @@ trait FontAwesome5Trait
 
     private $_iconSizes = ['xs', 'sm', 'lg', 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
+    private $_iconStackSizes = [1, 2];
+
     private $_iconStylePrefixes = [
         'solid' => "fas",
         'brand' => "fab",
         'regular' => "far",
         'light' => "fal"
     ];
+
+    public function fa5Stacked($iconBack = null, $iconFront = null, $options = [])
+    {
+        $options += [
+            'size' => 1
+        ];
+
+        $options = $this->addClass($options, 'fa-stack');
+
+        // size
+        $size = $this->_getIconSize($options['size']);
+        if (!empty($size)) {
+            $options = $this->addClass($options, $size);
+        }
+        unset($options['size']);
+
+        list($iconBackIcon, $iconBackOptions) = $this->getContentOptions($iconBack);
+        $iconBackOptions += ['stackSize' => 2];
+        $iBack = $this->fa5($iconBackIcon, $iconBackOptions);
+
+        list($iconFrontIcon, $iconFrontOptions) = $this->getContentOptions($iconFront);
+        $iconFrontOptions += ['stackSize' => 1];
+        $iFront = $this->fa5($iconFrontIcon, $iconFrontOptions);
+
+        return $this->tag('span', $iBack . $iFront, $options);
+    }
 
     public function fa5($name, $options = [])
     {
@@ -456,6 +484,7 @@ trait FontAwesome5Trait
             'rotate' => false,
             'isSpin' => false,
             'isInverse' => false,
+            'stackSize' => false
         ];
 
         // style
@@ -471,6 +500,13 @@ trait FontAwesome5Trait
             $options = $this->addClass($options, $size);
         }
         unset($options['size']);
+
+        // stack size
+        $stackSize = $this->_getIconStackSize($options['stackSize']);
+        if (!empty($stackSize)) {
+            $options = $this->addClass($options, $stackSize);
+        }
+        unset($options['stackSize']);
 
         // fixed width
         if ($options['isFixedWidth']) {
@@ -526,6 +562,19 @@ trait FontAwesome5Trait
                 $size .= "x";
             }
             $classSize = "fa-" . $size;
+        }
+
+        return $classSize;
+    }
+
+    private function _getIconStackSize($size)
+    {
+        $classSize = null;
+        if (in_array($size, $this->_iconStackSizes)) {
+            if (\is_numeric($size)) {
+                $size .= "x";
+            }
+            $classSize = "fa-stack-" . $size;
         }
 
         return $classSize;

@@ -2,6 +2,8 @@
 
 namespace QuinenCake\View\Helper;
 
+use Cake\Utility\Hash;
+
 trait Bootstrap4Trait
 {
     use BootstrapTrait {
@@ -13,6 +15,22 @@ trait Bootstrap4Trait
     use Bs4DropdownTrait;
     use Bs4NavTrait;
     use Bs4NavbarTrait;
+
+    public function cardsInRow($cards, $options = [])
+    {
+        return $this->row(collection($cards)->map(function($card){
+            if (!is_array($card)) {
+                $card = [$card, [], []];
+            }
+            return [
+                $this->card(
+                    Hash::get($card, 0),
+                    Hash::get($card, 1, [])
+                ),
+                Hash::get($card, 2, [])
+            ];
+        })->toArray(),$options);
+    }
 
     public function row($row, $options = [])
     {

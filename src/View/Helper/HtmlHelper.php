@@ -12,6 +12,7 @@ class HtmlHelper extends BaseHelper
     use HtmlTrait;
     use FontAwesome5Trait {
         fa5 as icon;
+        fa5Stacked as iconStacked;
     }
 
     public function initialize(array $config)

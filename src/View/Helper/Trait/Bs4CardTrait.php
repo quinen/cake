@@ -7,9 +7,8 @@ trait Bs4CardTrait
     public function cards($cards)
     {
         return implode(collection($cards)->map(function ($card) {
-            return $this->card($card['content'], [
-                'header' => $card['tab']
-            ]);
+            list($card, $cardOptions) = $this->getContentOptions($card);
+            return $this->card($card, $cardOptions);
         })->toArray());
     }
 
