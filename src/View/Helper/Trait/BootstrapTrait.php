@@ -8,8 +8,16 @@
 
 namespace QuinenCake\View\Helper;
 
+use Cake\ORM\TableRegistry;
 use Cake\Utility\Inflector;
+use MtxEnergie\Model\Table\FClientsTable;
 use QuinenLib\Arrays\MapTrait;
+
+/*
+ * @property QuinenCake\View\Helper\HtmlHelper $Html
+ * @property QuinenCake\View\Helper\FormHelper $Form
+ *
+ * */
 
 trait BootstrapTrait
 {
@@ -100,5 +108,71 @@ trait BootstrapTrait
         }
 
         return $table;
+    }
+
+    public function formatDatetime($value)
+    {
+        return $value;
+    }
+
+    public function formatDate($value)
+    {
+        return $value;
+    }
+
+    /**
+     * @param $value
+     * @param array $options
+     * @param array $data
+     * @return mixed
+     */
+    public function formatInput($value, $field, $options = [], $data = [])
+    {
+        //debug(func_get_args());
+        $options += [
+            'context' => false,
+            'label' => false,
+            'url' => true,
+            'templates' => [
+                'inputContainer' => '<div class="form-group {{required}}">{{content}}</div>'
+            ]
+        ];
+
+        $optionsCreate = [
+            'url' => null
+        ];
+
+        $context = $options['context'];
+        unset($options['context']);
+
+        if ($options['url'] === true) {
+            // automate url
+            $optionsCreate['url'] = $this->getFormatInputUrl($context);
+        } else {
+            $optionsCreate['url'] = $options['url'];
+        }
+
+
+        $form = [];
+        $form[] = $this->Form->create($context, $optionsCreate);
+        $form[] = $this->Form->control($field, $options);
+        $form[] = $this->Form->end();
+
+        return implode(PHP_EOL, $form);
+    }
+
+    private function getFormatInputUrl($context)
+    {
+        /** @var FClientsTable $table */
+        $table = TableRegistry::getTableLocator()->get($context->getSource());
+        $pk = $table->getPrimaryKey();
+        $controller = $table->getAlias();
+        $action = 'edit';
+        $pass0 = $context->get($pk);
+
+        $url = compact('controller', 'action');
+        $url[] = $pass0;
+
+        return $url;
     }
 }

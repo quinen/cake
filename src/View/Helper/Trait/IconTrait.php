@@ -20,7 +20,9 @@ trait IconTrait
             'icon' => $icon,
             'text' => $text
         ];
-        return $this->getIconText($options)[0];
+
+        list($iconText, $spanOptions) = $this->getIconText($options);
+        return $this->tag('span', $iconText, $spanOptions);
     }
 
     /**

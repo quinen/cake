@@ -47,48 +47,6 @@ trait BsButtonTrait
         return $buttonLink;
     }
 
-    public function buttons($buttons, $options = [], $data = [])
-    {
-        $options += [
-            'size' => false
-        ];
-
-        $options = $this->addClass($options, 'btn-group');
-
-        if ($options['size']) {
-            $options = $this->addClass($options, 'btn-group-' . $options['size']);
-        }
-
-        $content = implode(collection($buttons)->map(function ($button) use ($data) {
-            list($button, $buttonOptions) = $this->getContentOptions($button);
-            return $this->button($button, $buttonOptions, $data);
-        })->toArray());
-
-        return $this->Html->tag('div', $content, $options);
-    }
-
-    public function buttonsField($field, $options)
-    {
-        $content = implode(collection($options)->map(function ($button) use ($field) {
-            return $this->buttonField($field, $button);
-        })->toArray());
-        return $this->Html->div('btn-group', $content);
-    }
-
-    public function buttonField($field, $options)
-    {
-        if (!is_array($field)) {
-            $field = [$field];
-        }
-
-        if (is_scalar($options)) {
-            $options = ['button' => $options];
-        }
-        $options += ['size' => 'sm', 'showText' => false];
-
-        return $this->button($options, [], $field);
-    }
-
     /**
      * extrait et recupere les options lié a un model
      * si le modle n'existe pas on considere que c'est du texte
@@ -196,6 +154,56 @@ trait BsButtonTrait
         }
 
         return $content;
+    }
+
+    public function buttons($buttons, $options = [], $data = [])
+    {
+        $options += [
+            'size' => false
+        ];
+
+        $options = $this->addClass($options, 'btn-group');
+
+        if ($options['size']) {
+            $options = $this->addClass($options, 'btn-group-' . $options['size']);
+        }
+
+        $content = implode(collection($buttons)->map(function ($button) use ($data) {
+            list($button, $buttonOptions) = $this->getContentOptions($button);
+            return $this->button($button, $buttonOptions, $data);
+        })->toArray());
+
+        return $this->Html->tag('div', $content, $options);
+    }
+
+    /*
+     * vrai nom a utiliser, deprecating buttonsField
+     * */
+    public function formatButtons($field, $options)
+    {
+        return $this->buttonsField($field, $options);
+    }
+
+    public function buttonsField($field, $options)
+    {
+        $content = implode(collection($options)->map(function ($button) use ($field) {
+            return $this->buttonField($field, $button);
+        })->toArray());
+        return $this->Html->div('btn-group', $content);
+    }
+
+    public function buttonField($field, $options)
+    {
+        if (!is_array($field)) {
+            $field = [$field];
+        }
+
+        if (is_scalar($options)) {
+            $options = ['button' => $options];
+        }
+        $options += ['size' => 'sm', 'showText' => false];
+
+        return $this->button($options, [], $field);
     }
 
     protected function getButtonColor($options)

@@ -9,6 +9,8 @@
 
 namespace QuinenCake\View\Helper;
 
+use Cake\Utility\Hash;
+
 /**
  *
  */
@@ -434,7 +436,8 @@ trait FontAwesome5Trait
     public function fa5Stacked($iconBack = null, $iconFront = null, $options = [])
     {
         $options += [
-            'size' => 1
+            'size' => 1,
+            'stackSize' => [2, 1]
         ];
 
         $options = $this->addClass($options, 'fa-stack');
@@ -446,15 +449,31 @@ trait FontAwesome5Trait
         }
         unset($options['size']);
 
+        $stackSize = $options['stackSize'];
+        unset($options['stackSize']);
+
         list($iconBackIcon, $iconBackOptions) = $this->getContentOptions($iconBack);
-        $iconBackOptions += ['stackSize' => 2];
+        $iconBackOptions += ['stackSize' => Hash::get($stackSize, 0)];
         $iBack = $this->fa5($iconBackIcon, $iconBackOptions);
 
         list($iconFrontIcon, $iconFrontOptions) = $this->getContentOptions($iconFront);
-        $iconFrontOptions += ['stackSize' => 1];
+        $iconFrontOptions += ['stackSize' => Hash::get($stackSize, 1)];
         $iFront = $this->fa5($iconFrontIcon, $iconFrontOptions);
 
         return $this->tag('span', $iBack . $iFront, $options);
+    }
+
+    private function _getIconSize($size)
+    {
+        $classSize = null;
+        if (in_array($size, $this->_iconSizes)) {
+            if (\is_numeric($size)) {
+                $size .= "x";
+            }
+            $classSize = "fa-" . $size;
+        }
+
+        return $classSize;
     }
 
     public function fa5($name, $options = [])
@@ -552,19 +571,6 @@ trait FontAwesome5Trait
         }
 
         return $style;
-    }
-
-    private function _getIconSize($size)
-    {
-        $classSize = null;
-        if (in_array($size, $this->_iconSizes)) {
-            if (\is_numeric($size)) {
-                $size .= "x";
-            }
-            $classSize = "fa-" . $size;
-        }
-
-        return $classSize;
     }
 
     private function _getIconStackSize($size)

@@ -25,14 +25,46 @@ class Bs4Helper extends Helper
 
     public function getMapFormat($map, $options)
     {
+        // en mode debug, ajoute en title le nom du champ
         if (Configure::read('debug')) {
             $map['label'][1] = $map['label'][1] +
                 ['title' => $map['field'][0] . ':' . $map['format']];
         }
 
+        // autocentrage des icones
         if ($map['format'] === 'icon') {
             $map['field'][1] = $this->Html->addClass($map['field'][1], 'text-center');
         }
+
+        if (isset($map['input']) && $map['input'] === true) {
+            /*
+'format' => [
+    [$this->Bs4, 'formatInput'],
+    'email',
+    [
+        'context' => '{{f_client}}'
+    ]
+]
+*/
+            //debug($map);
+
+            $lastPoint = strrpos($map['field'][0], '.');
+
+
+            if ($lastPoint !== false) {
+                $context = substr($map['field'][0], 0, $lastPoint);
+                $field = substr($map['field'][0], $lastPoint + 1);
+            } else {
+                // pas de point
+                $context = '*';
+                $field = $map['field'][0];
+            }
+            //debug([$context, $field]);
+
+            $map['format'] = [[$this, 'formatInput'], $field, ['context' => '{{' . $context . '}}']];
+            return $map;
+        }
+        //debug($map);
 
         return $this->Html->getMapFormat($map, $options);
     }
@@ -40,16 +72,6 @@ class Bs4Helper extends Helper
     public function getMapLabel($field, $options)
     {
         return $this->Html->getMapLabel($field, $options);
-    }
-
-    public function formatDatetime($value)
-    {
-        return $value;
-    }
-
-    public function formatDate($value)
-    {
-        return $value;
     }
 
     public function submitRow($submit = "Valider", $options = [])
