@@ -12,7 +12,10 @@ class Bs4Helper extends Helper
 {
     use Bootstrap4Trait;
 
-    public $helpers = ['Html', 'Form'];
+    /*
+     * dependance Ui pour badgeTitle
+     * */
+    public $helpers = ['Html', 'Form', 'Ui'];
 
     public function initialize(array $config)
     {

@@ -18,7 +18,7 @@ trait Bootstrap4Trait
 
     public function cardsInRow($cards, $options = [])
     {
-        return $this->row(collection($cards)->map(function($card){
+        return $this->row(collection($cards)->map(function ($card) {
             if (!is_array($card)) {
                 $card = [$card, [], []];
             }
@@ -29,7 +29,7 @@ trait Bootstrap4Trait
                 ),
                 Hash::get($card, 2, [])
             ];
-        })->toArray(),$options);
+        })->toArray(), $options);
     }
 
     public function row($row, $options = [])
@@ -106,13 +106,31 @@ trait Bootstrap4Trait
         }
 
         return $html;
-
-
     }
 
     public function valueFalse($text = 'Non', $options = [])
     {
         return $this->badge('danger', $this->Html->iconText('times', $text), $options);
+    }
+
+    public function badgeTitle($count, $pluginController = null, $options = [])
+    {
+        $options += [
+            'template' => '{{title}}&nbsp;{{badge}}'
+        ];
+
+        $isPlural = true;
+        if ($count === 1) {
+            $isPlural = false;
+        }
+
+        $title = $this->Ui->getTitle($isPlural, $pluginController);
+
+        $badge = $this->badge('dark', $count, [
+            'tag' => ['h6', ['style' => 'display:contents;']]
+        ]);
+
+        return template($options['template'], compact('title', 'badge'));
     }
 
     public function alert($model = false, $content = null, $options = [])

@@ -48,6 +48,7 @@ var QuinenCake = QuinenCake || {};
 
     // tab link
     this.onBeforeSendTabLink = function ($event, xhr) {
+        //console.log('onBeforeSendTabLink',event,xhr);
 
         var $link = $($event.currentTarget);
         var id = $link.attr('id');
@@ -80,7 +81,7 @@ var QuinenCake = QuinenCake || {};
         // si tab n'existe pas deja
         if ($("#t-" + id + "").length == 0) {
 
-            var $ul = $link.parents('.card:first').find('ul.card-header-tabs');
+            var $ul = $link.parents('.card:first').find('ul.card-header-tabs:first');
             var $divs = $('#c-' + $ul.attr('id') + '');
 
             // on genere les tab et content
@@ -408,7 +409,7 @@ $(function () {
     QuinenCake.onLoad();
 });
 
-moment.defineLocale('fr', {
+moment.updateLocale('fr', {
     months: 'janvier_février_mars_avril_mai_juin_juillet_août_septembre_octobre_novembre_décembre'.split('_'),
     monthsShort: 'janv._févr._mars_avr._mai_juin_juil._août_sept._oct._nov._déc.'.split('_'),
     monthsParseExact: true,

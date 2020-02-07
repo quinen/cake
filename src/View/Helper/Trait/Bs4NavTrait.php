@@ -68,7 +68,7 @@ trait Bs4NavTrait
     public function navTab($list = [], $options = [])
     {
         $options += [
-            'id' => 'i'.Text::uuid(),
+            'id' => 'i' . Text::uuid(),
             'isHtml' => true,
             'tabClass' => false,
             'isActiveDefault' => 0
@@ -88,6 +88,7 @@ trait Bs4NavTrait
             'link' => false,
             'content' => false,
             'isActive' => false,
+            'isDisabled' => false,
             'color' => false,
         ];
 
@@ -110,8 +111,13 @@ trait Bs4NavTrait
                     'data-target' => "#" . $tabContent['id'],
                     //'role' => "tab"
                 ];
+
                 if ($tabContent['isActive']) {
                     $linkOptions = $this->Html->addClass($linkOptions, 'active');
+                }
+
+                if ($tabContent['isDisabled']) {
+                    $linkOptions = $this->Html->addClass($linkOptions, 'disabled');
                 }
 
                 if ($tabContent['color']) {
@@ -137,9 +143,20 @@ trait Bs4NavTrait
                     'id' => $tabContent['id'],
                     'class' => "tab-pane",
                 ];
+
+                $linkOptions = $this->addClassFromBooleanOptions(
+                    $linkOptions,
+                    ['active', 'disabled']
+                );
+
                 if ($tabContent['isActive']) {
                     $contentOptions = $this->addClass($contentOptions, 'active');
                 }
+
+                if ($tabContent['isDisabled']) {
+                    $contentOptions = $this->addClass($contentOptions, 'disabled');
+                }
+
                 $reducer['contents'][] = $this->Html->tag('div', $content, $contentOptions);
             }
 
@@ -164,7 +181,7 @@ trait Bs4NavTrait
             'tab-content',
             implode($navTab['contents']),
             [
-                'id' => 'c-'.$options['id'] . ''
+                'id' => 'c-' . $options['id'] . ''
             ]
         );
 
