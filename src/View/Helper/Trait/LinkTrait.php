@@ -21,8 +21,61 @@ trait LinkTrait
     private $linkFunctionPlugin = 'QuinenCake';
     private $linkContent = [];
 
+    public function storeContentLink($content, $link)
+    {
+        $keyArray = $this->normalizeLink($link);
+
+        $key = implode('.', $keyArray);
+
+        $this->request->getSession()->write('Ui.links.' . $key, $content);
+    }
+
+    public function normalizeLink($link)
+    {
+        if (!is_array($link)) {
+            $link = [$link];
+        }
+
+        $linkDefault = [
+            'plugin' => $this->getRequest()->getParam('plugin'),
+            'controller' => $this->getRequest()->getParam('controller'),
+            'action' => 'index',
+        ];
+
+        $keyArray = array_merge($linkDefault, $link);
+
+        if (isset($keyArray['controller'])) {
+            $keyArray['controller'] = Inflector::pluralize(
+                Inflector::classify(Inflector::underscore($keyArray['controller']))
+            );
+        }
+
+        if (isset($keyArray['action'])) {
+            $keyArray['action'] = Inflector::variable(Inflector::underscore($keyArray['action']));
+        }
+
+        return $keyArray;
+    }
+
+    /**
+     * add class in link options if exist, btw transform any link in true link
+     */
+    public function addClassInLink($list, $class, $field = "class")
+    {
+        return collection($list)->map(
+            function ($li) use ($class, $field) {
+                list($li, $liOptions) = $this->getContentOptions($li);
+                return $this->linkify($li, $liOptions, [$field => $class]);
+            }
+        )->toArray();
+    }
+
     public function linkify($content, array $options = [], array $injectLinkOptions = [])
     {
+        $debug = isset($options['ajaxLink']);
+        if ($debug) {
+            debug(func_get_args());
+        }
         $linkCallback = [
             'link' => [$this->getView()->Html, 'link'],
             'postLink' => [$this->getView()->Form, 'postLink']
@@ -94,7 +147,6 @@ trait LinkTrait
                     $linkOptions
                 );
             } else {
-
                 if ($this->linkCheckAccess()) {
                     if (is_array($this->linkContent)) {
                         unset($this->linkContent['_access']);
@@ -119,6 +171,7 @@ trait LinkTrait
 
     private function ajaxLinkToLink($options = [])
     {
+        debug($options);
         list($ajax, $ajaxOptions) = $this->getContentOptions($options['ajaxLink']);
 
         $ajaxOptions += [
@@ -136,28 +189,37 @@ trait LinkTrait
         ];
 
         // on enrobe le nom des fonctions dans une fonction anonyme
-        $ajaxOptions = collection($ajaxOptions)->filter(function ($v, $k) use ($functionOptions) {
-                return array_key_exists($k, $functionOptions);
-            })->map(function ($option, $k) use ($functionOptions) {
-                return 'function(' . $functionOptions[$k] . '){return ' . $option .
-                    '($event,' . $functionOptions[$k] . ');}';
-            })->toArray() + $ajaxOptions;
+        $ajaxOptions = collection($ajaxOptions)->filter(
+                function ($v, $k) use ($functionOptions) {
+                    return array_key_exists($k, $functionOptions);
+                }
+            )->map(
+                function ($option, $k) use ($functionOptions) {
+                    return 'function(' . $functionOptions[$k] . '){return ' . $option .
+                        '($event,' . $functionOptions[$k] . ');}';
+                }
+            )->toArray() + $ajaxOptions;
 
         // on vire les options inconnues de jquery.ajax
-        $linkOptions = array_diff_key($ajaxOptions, $functionOptions + ['url' => null]);
+        $jqueryAjaxOptions = array_flip(['url', 'data', 'method']);
+        $linkOptions = array_diff_key($ajaxOptions, $functionOptions + $jqueryAjaxOptions);
         $ajaxOptions = array_diff_key($ajaxOptions, $linkOptions);
+
+        debug([$linkOptions, $ajaxOptions]);
 
         $options['link'] = ['#', $linkOptions];
         // fin de l'ecriture du lien
 
 
-        $js = Text::insert('$(function(){$(\'#:id\').on("click",function($event){' .
+        $js = Text::insert(
+            '$(function(){$(\'#:id\').on("click",function($event){' .
             '$.ajax(:eventData);' .
             'return false;});});',
             [
                 'id' => $linkOptions['id'],
                 'eventData' => Tools::jsonEncodeWithFunction($ajaxOptions)
-            ]);
+            ]
+        );
 
         echo $this->getView()->Html->scriptBlock($js, ['block' => 'script']);
 
@@ -181,59 +243,14 @@ trait LinkTrait
         return $isAuthCheck || $isLinkAccess;
     }
 
-    public function storeContentLink($content, $link)
-    {
-        $keyArray = $this->normalizeLink($link);
-
-        $key = implode('.', $keyArray);
-
-        $this->request->getSession()->write('Ui.links.' . $key, $content);
-    }
-
-    public function normalizeLink($link)
-    {
-        if (!is_array($link)) {
-            $link = [$link];
-        }
-
-        $linkDefault = [
-            'plugin' => $this->getRequest()->getParam('plugin'),
-            'controller' => $this->getRequest()->getParam('controller'),
-            'action' => 'index',
-        ];
-
-        $keyArray = array_merge($linkDefault, $link);
-
-        if (isset($keyArray['controller'])) {
-            $keyArray['controller'] = Inflector::pluralize(
-                Inflector::classify(Inflector::underscore($keyArray['controller']))
-            );
-        }
-
-        if (isset($keyArray['action'])) {
-            $keyArray['action'] = Inflector::variable(Inflector::underscore($keyArray['action']));
-        }
-
-        return $keyArray;
-    }
-
-    /**
-     * add class in link options if exist, btw transform any link in true link
-     */
-    public function addClassInLink($list, $class, $field = "class")
-    {
-        return collection($list)->map(function ($li) use ($class, $field) {
-            list($li, $liOptions) = $this->getContentOptions($li);
-            return $this->linkify($li, $liOptions, [$field => $class]);
-        })->toArray();
-    }
-
     public function isLinkExistInOptions($options)
     {
         $keys = array_keys($this->linkDefaults);
-        return !collection($options)->filter(function ($v, $k) use ($keys) {
-            return in_array($k, $keys, true) && $v;
-        })->isEmpty();
+        return !collection($options)->filter(
+            function ($v, $k) use ($keys) {
+                return in_array($k, $keys, true) && $v;
+            }
+        )->isEmpty();
     }
 
     private function modalLinkToAjaxLink($options = [])
