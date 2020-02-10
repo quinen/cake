@@ -72,10 +72,6 @@ trait LinkTrait
 
     public function linkify($content, array $options = [], array $injectLinkOptions = [])
     {
-        $debug = isset($options['ajaxLink']);
-        if ($debug) {
-            debug(func_get_args());
-        }
         $linkCallback = [
             'link' => [$this->getView()->Html, 'link'],
             'postLink' => [$this->getView()->Form, 'postLink']
@@ -171,7 +167,6 @@ trait LinkTrait
 
     private function ajaxLinkToLink($options = [])
     {
-        debug($options);
         list($ajax, $ajaxOptions) = $this->getContentOptions($options['ajaxLink']);
 
         $ajaxOptions += [
@@ -204,8 +199,6 @@ trait LinkTrait
         $jqueryAjaxOptions = array_flip(['url', 'data', 'method']);
         $linkOptions = array_diff_key($ajaxOptions, $functionOptions + $jqueryAjaxOptions);
         $ajaxOptions = array_diff_key($ajaxOptions, $linkOptions);
-
-        debug([$linkOptions, $ajaxOptions]);
 
         $options['link'] = ['#', $linkOptions];
         // fin de l'ecriture du lien
