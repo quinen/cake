@@ -62,6 +62,7 @@ trait Bootstrap4Trait
 
     public function badge($model = false, $content = null, $options = [])
     {
+        $defaultTag = 'h6';
 
         $modelOptions = [
             'primary',
@@ -77,7 +78,9 @@ trait Bootstrap4Trait
         $options += [
             'badge' => 'light',
             'isPill' => false,
-            'tag' => 'h6',
+            // @deprecated
+            'tag' => $defaultTag,
+            'size' => 6
         ];
 
         if (!$model || !in_array($model, $modelOptions)) {
@@ -96,7 +99,13 @@ trait Bootstrap4Trait
             ]
         );
 
-        list($tag, $tagOptions) = $this->getContentOptions($options['tag']);
+        // new version a prendre en compte
+        if ($options['tag'] === $defaultTag) {
+            list($tag, $tagOptions) = ['span', ['class' => 'h' . $options['size']]];
+        } else {
+            list($tag, $tagOptions) = $this->getContentOptions($options['tag']);
+        }
+        unset($options['size']);
         unset($options['tag']);
 
         $html = $this->Html->tag('span', $content, $options);

@@ -46,6 +46,7 @@ trait IconTrait
             'icon' => false,
             'showText' => true,
             'text' => false,
+            'isTitle' => true,
             'preText' => false,
             'isAfter' => false,
         ];
@@ -79,7 +80,7 @@ trait IconTrait
             $iconText[] = array_shift($iconText);
         }
 
-        if ($options['text']) {
+        if ($options['isTitle'] && $options['text']) {
             $options += ['title' => strip_tags($text)];
         }
 
