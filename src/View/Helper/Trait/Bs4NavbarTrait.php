@@ -45,7 +45,20 @@ trait Bs4NavbarTrait
 
         // convert list elements
         $navbarList = $this->navbarList($list, $options);
-        $navbar[] = $this->Html->list($navbarList, ['class' => "navbar-nav"]);
+
+        // split navbar on left and right
+        $navbarLeftRight = collection($navbarList)->reduce(function ($reducer, $navbar) {
+            if (isset($navbar[1]['align']) && $navbar[1]['align'] === 'right') {
+                unset($navbar[1]['align']);
+                $reducer['right'][] = $navbar;
+            } else {
+                $reducer['left'][] = $navbar;
+            }
+            return $reducer;
+        }, ['left' => [], 'right' => []]);
+
+        $navbar[] = $this->Html->list($navbarLeftRight['left'], ['class' => "navbar-nav"]);
+        $navbar[] = $this->Html->list($navbarLeftRight['right'], ['class' => "navbar-nav ml-auto"]);
         $options = array_diff_key($options, $optionsDefault);
 
         return $this->Html->tag('nav', implode($navbar), $options);
@@ -66,13 +79,24 @@ trait Bs4NavbarTrait
             if ($this->Html->isLinkExistInOptions($elementOptions)) {
                 list($element, $elementOptions) = $this->Html->linkify($element, $elementOptions,
                     ['class' => "nav-link"]);
+
             } else {
                 if (isset($elementOptions['list'])) {
 
                     $list = $elementOptions['list'];
                     unset($elementOptions['list']);
 
-                    $button = [false, $elementOptions + ['text' => $element, 'color' => $options['bg']]];
+                    $button = [
+                        false,
+                        [
+                            // option for navbar only
+                            'align' => false
+                        ] + $elementOptions + [
+                            'text' => $element,
+                            'color' =>
+                                $options['bg']
+                        ]
+                    ];
                     unset($elementOptions['title']);
 
                     $elementOptions = $this->Html->addClass($elementOptions, 'dropdown');

@@ -236,3 +236,8 @@ tr.align-middle > td {
 .link-modal-title {
     display: none;
 }
+
+.ml-auto .dropdown-menu {
+    left: auto !important;
+    right: 0px;
+}
