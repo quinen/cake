@@ -57,7 +57,6 @@ class FormHelper extends BaseHelper
     public function control($fieldName, array $options = [])
     {
         $options += [
-            'placeholder' => true,
             'autocomplete' => "new-password"
         ];
 
@@ -65,10 +64,16 @@ class FormHelper extends BaseHelper
             unset($options['autocomplete']);
         }
 
-        if (isset($options['type']) && in_array($options['type'], ['checkbox', 'select'])) {
-            $options['placeholder'] = false;
-            $options['label'] = false;
-        }
+        $options = $this->handlePlaceholder($options);
+
+        return parent::control($fieldName, $options);
+    }
+
+    private function handlePlaceholder(array $options)
+    {
+        $options += [
+            'placeholder' => true,
+        ];
 
         if ($options['placeholder'] === true) {
             if (isset($options['label'])) {
@@ -77,9 +82,8 @@ class FormHelper extends BaseHelper
                 unset($options['placeholder']);
             }
         }
-        //debug([$fieldName, $options]);
 
-        return parent::control($fieldName, $options);
+        return $options;
     }
 
     /**

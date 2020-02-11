@@ -18,7 +18,7 @@ echo $this->Html->div(
             ]
         ],
         [
-            'preText' => 'Modifier'
+            'template' => '{{icon}} Modifier {{text}}'
         ]
 {% else %}
         'plus',
@@ -29,7 +29,7 @@ echo $this->Html->div(
             ]
         ],
         [
-            'preText' => 'Ajouter'
+            'template' => '{{icon}} Ajouter {{text}}'
         ]
 {% endif %}
     )

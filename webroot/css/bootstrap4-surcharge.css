@@ -160,7 +160,7 @@ input[type="checkbox"] {
     -moz-appearance: none;
     appearance: none;
 
-    font-family: 'Font Awesome 5 Free', monospace;
+    font-family: 'Font Awesome 5 Pro','Font Awesome 5 Free', monospace;
     font-weight: 900;
 
     width: 1.5rem;

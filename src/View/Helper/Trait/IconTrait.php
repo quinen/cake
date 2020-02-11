@@ -31,11 +31,6 @@ trait IconTrait
      */
     public function getIconText($options = [])
     {
-        /*
-        if(isset($options['icon']) && $options['icon']=='file-export'){
-            debug($options);
-        }
-        */
 
         if (\is_string($options)) {
             $options = ['text' => $options];
@@ -47,8 +42,7 @@ trait IconTrait
             'showText' => true,
             'text' => false,
             'isTitle' => true,
-            'preText' => false,
-            'isAfter' => false,
+            'template' => '{{icon}}&nbsp;{{text}}'
         ];
 
         $options += $optionsDefaults;
@@ -57,36 +51,29 @@ trait IconTrait
 
         if ($options['showIcon'] && $options['icon']) {
             list($icon, $iconOptions) = $this->getContentOptions($options['icon']);
-            $iconText[] = $this->icon($icon, $iconOptions);
+            $iconText['icon'] = $this->icon($icon, $iconOptions);
         }
 
         $text = $options['text'];
         if ($text !== false && $options['showText']) {
 
-            if ($options['preText']) {
-                $iconText[] = $options['preText'];
-            }
-
             list($text, $textOptions) = $this->getContentOptions($text);
 
             if (empty($textOptions)) {
-                $iconText[] = $text;
+                $iconText['text'] = $text;
             } else {
-                $iconText[] = $this->tag('span', $text, $textOptions);
+                $iconText['text'] = $this->tag('span', $text, $textOptions);
             }
-        }
-
-        if ($options['isAfter']) {
-            $iconText[] = array_shift($iconText);
         }
 
         if ($options['isTitle'] && $options['text']) {
             $options += ['title' => strip_tags($text)];
         }
 
+        $template = $options['template'];
         // strip options from defaults key
         $options = array_diff_key($options, $optionsDefaults);
 
-        return [implode('&nbsp;', $iconText), $options];
+        return [\template($template, $iconText), $options];
     }
 }
