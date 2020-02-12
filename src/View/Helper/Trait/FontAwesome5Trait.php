@@ -427,10 +427,11 @@ trait FontAwesome5Trait
     private $_iconStackSizes = [1, 2];
 
     private $_iconStylePrefixes = [
-        'solid' => "fas",
-        'brand' => "fab",
-        'regular' => "far",
-        'light' => "fal"
+        'solid' => 'fas',
+        'brand' => 'fab',
+        'regular' => 'far',
+        'light' => 'fal',
+        'duotone' => 'fad'
     ];
 
     public function fa5Stacked($iconBack = null, $iconFront = null, $options = [])
