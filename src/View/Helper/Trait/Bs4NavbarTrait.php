@@ -6,6 +6,7 @@ trait Bs4NavbarTrait
 {
     public function navbar($brand = false, $list = [], $options = [])
     {
+//        debug(func_get_args());
         $optionsDefault = [
             // sm or lg possible, switch size for mobile menu
             'expand' => true,
@@ -69,6 +70,7 @@ trait Bs4NavbarTrait
         return collection($list)->map(function ($element) use ($options) {
             // formatage
             list($element, $elementOptions) = $this->getContentOptions($element);
+
             if (is_array($element) && empty($elementOptions)) {
                 $elementOptions = $element;
                 $element = false;

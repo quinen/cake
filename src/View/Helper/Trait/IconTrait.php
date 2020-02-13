@@ -42,7 +42,7 @@ trait IconTrait
             'showText' => true,
             'text' => false,
             'isTitle' => true,
-            'template' => '{{icon}}&nbsp;{{text}}'
+            'template' => '{{icon}} {{text}}'
         ];
 
         $options += $optionsDefaults;
@@ -74,6 +74,6 @@ trait IconTrait
         // strip options from defaults key
         $options = array_diff_key($options, $optionsDefaults);
 
-        return [\template($template, $iconText), $options];
+        return [trim(\template($template, $iconText)), $options];
     }
 }

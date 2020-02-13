@@ -73,9 +73,19 @@ trait Bs4DropdownTrait
 
             list($element, $elementOptions) = $this->Html->getIconText($elementOptions + ['text' => $element]);
 
-            if ('-' === $element) {
-                $element = $this->Html->div('dropdown-divider', "");
+
+            if ($this->Html->isLinkExistInOptions($elementOptions)) {
+                // if link
+                /*
+                 * semble inutile
+                if (is_array($element)) {
+                    list($element, $elementOptions) = $this->Html->getIconText($element);
+                }*/
+                list($element) = $this->linkify($element, $elementOptions, ['class' => "dropdown-item"]);
+
+
             } elseif (isset($elementOptions['list'])) {
+                // if menu
                 $element = $this->dropdown(
                     [
                         false,
@@ -88,11 +98,12 @@ trait Bs4DropdownTrait
                     $elementOptions['list'],
                     ['class' => 'dropdown-submenu']
                 );
+            } elseif ('-' === $element) {
+                $element = $this->Html->div('dropdown-divider', "");
+            } elseif (!empty($element)) {
+                $element = $this->Html->div('dropdown-header', $element, $elementOptions);
             } else {
-                if (is_array($element)) {
-                    list($element, $elementOptions) = $this->Html->getIconText($element);
-                }
-                list($element) = $this->linkify($element, $elementOptions, ['class' => "dropdown-item"]);
+                //debug([$element, $elementOptions]);
             }
 
             return $element;

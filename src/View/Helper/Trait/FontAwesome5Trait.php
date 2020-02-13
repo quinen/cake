@@ -479,6 +479,7 @@ trait FontAwesome5Trait
 
     public function fa5($name, $options = [])
     {
+        //debug(debug_print_backtrace());
         // n icons
         $nameExploded = explode(' ', $name);
         if (count($nameExploded) > 1) {

@@ -26,7 +26,8 @@ trait Bs4CardTrait
             'buttons' => [],
             'body' => false,
             'footer' => false,
-            'content' => false
+            'content' => false,
+            'color' => 'white'
         ];
 
 
@@ -76,7 +77,15 @@ trait Bs4CardTrait
             $footer = $this->Html->div('card-footer', $options['footer']);
         }
 
-        return $this->Html->div('card', $header . $body . $content . $footer);
+        $cardClass = '';
+        if ($options['color']) {
+            $cardClass .= ' bg-' . $options['color'];
+            if ($options['color'] === 'dark') {
+                $cardClass .= ' text-white';
+            }
+        }
+
+        return $this->Html->div('card' . $cardClass, $header . $body . $content . $footer);
     }
 
     public function formInCard($controls, $controlsOptions = [], $cardOptions = [])
