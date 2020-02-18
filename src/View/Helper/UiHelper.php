@@ -75,6 +75,7 @@ class UiHelper extends Helper
             // ne devrais pas exister
             'login' => ['icon' => 'sign-in-alt', 'text' => 'Connexion'],
             'logout' => ['icon' => 'sign-out-alt', 'text' => 'Déconnexion'],
+            'password' => ['icon' => 'key', 'text' => 'Mot de Passe'],
         ];
 
         $options += [
