@@ -9,6 +9,7 @@ use Cake\Collection\Collection;
 use Cake\ORM\Query;
 use Cake\ORM\ResultSet;
 use Cake\View\Helper\PaginatorHelper;
+use function PHPSTORM_META\type;
 
 trait TableTrait
 {
@@ -35,7 +36,7 @@ trait TableTrait
             'empty' => 'Aucun resultat',
             'emptyOptions' => [],
             'mapCallbackClass' => $this,
-            'context' => null
+            'context' => false
         ];
 
         $options += $optionsDefault;
@@ -51,7 +52,12 @@ trait TableTrait
                 $firstData = $datas->cleanCopy()->first();
             }
             if ($firstData != null) {
-                $this->setCurrentContext($firstData->getSource());
+                if(is_array($firstData)){
+                    $this->setCurrentContext($options['context']);
+                } else {
+                    $this->setCurrentContext($firstData->getSource());
+                }
+
             }
             $datas = $datas->toArray();
         } else {

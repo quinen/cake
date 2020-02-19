@@ -37,7 +37,7 @@
 $showMenu = (isset($showMenu) ? $showMenu : ($this->request->getParam('action') !== 'login'));
 
 if ($showMenu) {
-    echo $this->element('CpaAdmin.Layout/menu');
+    echo $this->element($this->getPlugin().'.Layout/menu');
 
 // controller titles custom
     $breadcrumbControllers = [
