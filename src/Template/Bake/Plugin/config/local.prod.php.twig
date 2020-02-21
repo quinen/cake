@@ -1,0 +1,24 @@
+<?php
+
+use Cake\Datasource\ConnectionManager;
+
+$mtenergieDbCfg = [
+    'className' => 'Cake\Database\Connection',
+    'driver' => 'Cake\Database\Driver\Mysql',
+    'database' => '{{plugin}}',
+    'username' => '',
+    'password' => '',
+    'persistent' => false
+];
+ConnectionManager::setConfig(
+    '{{plugin}}.master',
+    $mtenergieDbCfg + [
+        'host' => 'mysql.cluster_w',
+    ]);
+
+ConnectionManager::setConfig(
+    '{{plugin}}.slave',
+    $mtenergieDbCfg + [
+        'host' => 'mysql.cluster_r',
+    ]);
+
