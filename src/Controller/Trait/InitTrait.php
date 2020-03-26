@@ -51,8 +51,12 @@ trait InitTrait
             'html' => HtmlHelper::class,
         ];
 
+        if($options['auth']){
+            $this->viewBuilder()->setHelper('Auth',['className' => $options['auth']]);
+        }
+
         $this->viewBuilder()->setHelpers([
-            'Auth' => ['className' => $options['auth']],
+            //'Auth' => ['className' => $options['auth']],
             'Html' => ['className' => $options['html']],
             'Ui' => ['className' => UiHelper::class],
         ]);

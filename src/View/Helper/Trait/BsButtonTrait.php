@@ -232,11 +232,13 @@ trait BsButtonTrait
 
         $buttonModels = [
             'primary' => ['color' => "primary"],
+            'secondary' => ['color' => "secondary"],
             'success' => ['color' => "success"],
             'danger' => ['color' => "danger"],
             'warning' => ['color' => "warning"],
             'info' => ['color' => "info"],
             'link' => ['color' => "link"],
+            'dark' => ['color' => "dark"],
 
             // crud
             'create' => [
