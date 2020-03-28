@@ -169,6 +169,10 @@ trait Bootstrap4Trait
 
         $options = $this->addClass($options, 'mx-auto alert alert-' . $model);
 
+        if(is_array($content)){
+            $content = implode('<br/>',$content);
+        }
+
         if ($options['isDismissible']) {
             $options = $this->addClass($options, 'alert-dismissible fade show');
             $content .= $this->button([
