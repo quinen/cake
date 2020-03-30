@@ -13,6 +13,7 @@ var QuinenCake = QuinenCake || {};
         //this.initSelect2();
         this.initDatepicker();
         this.listenForLoading();
+        this.initPopover();
     };
 
     // ajax link
@@ -402,6 +403,30 @@ var QuinenCake = QuinenCake || {};
             self.startLoading();
         })
     }
+
+    this.copyToClipboard = function (b) {
+        var a = document.createElement("textarea");
+        a.value = b;
+        a.setAttribute("readonly", "");
+        a.style.position = "absolute";
+        a.style.left = "-9999px";
+        document.body.appendChild(a);
+        b = 0 < document.getSelection().rangeCount ? document.getSelection().getRangeAt(0) : !1;
+        a.select();
+        document.execCommand("copy");
+        document.body.removeChild(a);
+        b && (document.getSelection().removeAllRanges(), document.getSelection().addRange(b));
+    };
+
+    this.initPopover = function () {
+        $('[data-toggle="popover"]').popover();
+
+        $('[data-toggle="popover"]').on('shown.bs.popover', function() {
+            setTimeout(function() {
+                $('[data-toggle="popover"]').popover('hide');
+            }, 1000);
+        });
+    };
 }).apply(QuinenCake);
 
 

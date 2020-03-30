@@ -2,6 +2,8 @@
 
 namespace QuinenCake\View\Helper;
 
+use Cake\Utility\Hash;
+
 trait Bs4NavbarTrait
 {
     public function navbar($brand = false, $list = [], $options = [])
@@ -12,7 +14,8 @@ trait Bs4NavbarTrait
             'expand' => true,
             // light, dark
             'theme' => "light",
-            'bg' => "light"
+            'bg' => "light",
+            'classRight' => 'ml-auto'
         ];
 
         $options += $optionsDefault;
@@ -49,17 +52,17 @@ trait Bs4NavbarTrait
 
         // split navbar on left and right
         $navbarLeftRight = collection($navbarList)->reduce(function ($reducer, $navbar) {
-            if (isset($navbar[1]['align']) && $navbar[1]['align'] === 'right') {
-                unset($navbar[1]['align']);
-                $reducer['right'][] = $navbar;
-            } else {
-                $reducer['left'][] = $navbar;
-            }
+            $align = (isset($navbar[1]['align']) ? $navbar[1]['align'] : 'left');
+            $reducer[$align][] = $navbar;
             return $reducer;
-        }, ['left' => [], 'right' => []]);
+        }, []);
 
         $navbar[] = $this->Html->list($navbarLeftRight['left'], ['class' => "navbar-nav"]);
-        $navbar[] = $this->Html->list($navbarLeftRight['right'], ['class' => "navbar-nav ml-auto"]);
+        if (isset($navbarLeftRight['center'])) {
+            $navbar[] = implode('', Hash::extract($navbarLeftRight['center'], '{n}.0'));
+        }
+        $navbar[] = $this->Html->list($navbarLeftRight['right'], ['class' => trim("navbar-nav " . $options['classRight'])]);
+
         $options = array_diff_key($options, $optionsDefault);
 
         return $this->Html->tag('nav', implode($navbar), $options);
@@ -95,8 +98,7 @@ trait Bs4NavbarTrait
                             'align' => false
                         ] + $elementOptions + [
                             'text' => $element,
-                            'color' =>
-                                $options['bg']
+                            'color' => $options['bg']
                         ]
                     ];
                     unset($elementOptions['title']);
@@ -104,6 +106,8 @@ trait Bs4NavbarTrait
                     $elementOptions = $this->Html->addClass($elementOptions, 'dropdown');
                     $element = $this->dropdown($button, $list, ['inDiv' => false]);
 
+                } else if (isset($elementOptions['raw'])) {
+                    $element = $elementOptions['raw'];
                 } else {
                     $element = $this->Html->div('navbar-text', $element);
                 }

@@ -173,21 +173,15 @@ class {{ name }}Table extends {{ connectionName }}Table
     {% endif %}
 {%- endfor %}
 
-public function findSearch(Query $query, $options = [])
-{
-if (Hash::get($options, 'sort') !== null) {
-$sort = explode('.', $options['sort']);
-if (count($sort) > 1) {
-$sort[0] = Inflector::pluralize(Inflector::classify($sort[0]));
-}
-$query->order([implode('.', $sort) => $options['direction']]);
-}
-return $query->find('form')->contain([{{ Bake.stringifyList(belongsTo, {'indent': false})|raw }}]);
-}
+    public function findSearch(Query $query, $options = [])
+    {
+        $this->findSortDirection($query, $options, []);
+        return $query->find('form')->contain([{{ Bake.stringifyList(belongsTo, {'indent': false})|raw }}]);
+    }
 
-public function findForm(Query $query, $options = [])
-{
-$options = Arrays::filterEmptyExceptZero($options);
+    public function findForm(Query $query, $options = [])
+    {
+        $options = Arrays::filterEmptyExceptZero($options);
 
 {% for field in search %}
     if (isset($options['{{ field }}'])) {
@@ -195,6 +189,6 @@ $options = Arrays::filterEmptyExceptZero($options);
     }
 {% endfor %}
 
-return $query;
-}
+        return $query;
+    }
 }

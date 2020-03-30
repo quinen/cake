@@ -10,6 +10,8 @@ namespace QuinenCake\Model;
 
 
 use Cake\ORM\Query;
+use Cake\Utility\Hash;
+use Cake\Utility\Inflector;
 
 trait TableTrait
 {
@@ -71,5 +73,24 @@ trait TableTrait
     {
         return parent::findList($query, $options)
             ->order([$this->aliasField($this->getDisplayField()) => 'ASC']);
+    }
+
+    public function findSortDirection(Query $query, array $options = [], array $defaults = [])
+    {
+        $sort = Hash::get($options, 'sort');
+        if ($sort !== null) {
+            $sort = explode('.', $sort);
+            $nbSort = count($sort);
+            if ($nbSort === 1) {
+                $sort = $this->aliasField($sort[0]);
+            } else {
+                $sortClassIndex = $nbSort - 2;
+                $sort[$sortClassIndex] = Inflector::pluralize(Inflector::classify($sort[$sortClassIndex]));
+                $sort = $sort[$sortClassIndex] . '.' . $sort[$sortClassIndex + 1];
+            }
+            $query->order([$sort => $options['direction']]);
+        } else {
+            $query->order($defaults);
+        }
     }
 }
