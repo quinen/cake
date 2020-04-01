@@ -59,7 +59,7 @@ class Bs4Helper extends Helper
                 $field = substr($map['field'][0], $lastPoint + 1);
             } else {
                 // pas de point
-                $context = '*';
+                $context = '';
                 $field = $map['field'][0];
             }
             //debug([$context, $field]);

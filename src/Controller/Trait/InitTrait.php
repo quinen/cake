@@ -52,7 +52,7 @@ trait InitTrait
         ];
 
         if($options['auth']){
-            $this->viewBuilder()->setHelper('Auth',['className' => $options['auth']]);
+            $this->viewBuilder()->setHelpers(['Auth'=>['className' => $options['auth']]]);
         }
 
         $this->viewBuilder()->setHelpers([
