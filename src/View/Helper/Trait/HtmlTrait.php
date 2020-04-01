@@ -132,21 +132,22 @@ trait HtmlTrait
 
     public function formatUrl($value, $options = [])
     {
-        if (empty($value)) {
-            $urlValue = $this->icon('times', ['class' => 'text-danger']);
-        } else {
-            $shortValue = $this->formatShorten($value);
+        $options += [
+            'showText' => true
+        ];
 
-            $urlValue = $shortValue .
-                '&nbsp;' .
-                $this->link(
-                    $this->icon('external-link-alt'),
-                    $value,
-                    [
-                        'escape' => false,
-                        'target' => '_blank'
-                    ]
-                );
+        if (empty($value)) {
+            $urlValue = $this->icon('times', ['style' => 'font-size:2em;color:darkred;']);
+        } else {
+            $urlValue = $this->link(
+                $this->icon('external-link-alt', ['style' => 'font-size:2em;']),
+                $value,
+                [
+                    'escape' => false,
+                    'target' => '_blank'
+                ]
+            );
+            $urlValue .= ($options['showText'] ? '&nbsp;' . $this->formatShorten($value) : '');
 
         }
 

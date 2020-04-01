@@ -8,6 +8,8 @@
 
 namespace QuinenCake\View\Helper;
 
+use Cake\Core\Exception\Exception;
+use Cake\ORM\Entity;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Inflector;
 use MtxEnergie\Model\Table\FClientsTable;
@@ -134,7 +136,7 @@ trait BootstrapTrait
             'label' => false,
             'url' => true,
             'templates' => [
-                'inputContainer' => '<div class="form-group {{required}}">{{content}}</div>'
+                'inputContainer' => '<div class="{{required}}">{{content}}</div>'
             ]
         ];
 
@@ -163,8 +165,13 @@ trait BootstrapTrait
 
     private function getFormatInputUrl($context)
     {
+        if($context instanceof Entity){
+            $tableName = $context->getSource();
+        } else {
+            throw new Exception('need an entity to generate url');
+        }
         /** @var FClientsTable $table */
-        $table = TableRegistry::getTableLocator()->get($context->getSource());
+        $table = TableRegistry::getTableLocator()->get($tableName);
         $pk = $table->getPrimaryKey();
         $controller = $table->getAlias();
         $action = 'edit';
@@ -172,7 +179,6 @@ trait BootstrapTrait
 
         $url = compact('controller', 'action');
         $url[] = $pass0;
-
         return $url;
     }
 }
