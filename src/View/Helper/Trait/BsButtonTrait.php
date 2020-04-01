@@ -24,6 +24,9 @@ trait BsButtonTrait
      */
     public function button($model = false, $options = [], $data = [])
     {
+        if($model === false && $options === []){
+            return null;
+        }
         // get options from model
         $options = $this->getButtonOptionsFromModel($model, $options, $data);
 

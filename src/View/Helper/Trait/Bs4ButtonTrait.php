@@ -33,6 +33,13 @@ trait Bs4ButtonTrait
             'reset' => ['icon' => 'redo'] + $this->getBootstrapButtonModels('reset'),
             'submit' => ['icon' => 'check'] + $this->getBootstrapButtonModels('submit'),
 
+            'outline-warning' => ['color' => 'outline-warning'] + $this->getBootstrapButtonModels('warning'),
+            'outline-success' => ['color' => 'outline-success'] + $this->getBootstrapButtonModels('success'),
+            'outline-danger' => ['color' => 'outline-danger'] + $this->getBootstrapButtonModels('danger'),
+            'outline-secondary' => ['color' => 'outline-secondary']+ $this->getBootstrapButtonModels('secondary'),
+            'outline-light' => ['color' => 'outline-light'],
+            //*/
+
         ];
 
         if ($model !== null) {

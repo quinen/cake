@@ -10,7 +10,7 @@ var QuinenCake = QuinenCake || {};
         this.updateFromInputValue();
         this.listenOnClearForm();
         this.listenOnDropdownMenu();
-        //this.initSelect2();
+        this.initSelect2();
         this.initDatepicker();
         this.listenForLoading();
         this.initPopover();
@@ -236,11 +236,30 @@ var QuinenCake = QuinenCake || {};
     };
 
     this.initSelect2 = function () {
+
         $('select').select2({
-            theme: "bootstrap4",
+            theme: 'bootstrap4',
+            language: 'fr',
+            allowClear: true,
+            dropdownAutoWidth: true,
+            escapeMarkup: function (markup) {
+                return markup;
+            },
+            templateResult: function (data) {
+                return data.html;
+            },
+            templateSelection: function (data) {
+                return data.text;
+            }
+
             //allowClear: true // bootstrap 4 conflict
-        });
+        }).on('select2:opening', function () {
+            QuinenCake.showLoading = false;
+        }).on('select2:close', function () {
+            QuinenCake.showLoading = true;
+        }).maximizeSelect2Height();
     };
+
 
     this.updateFromInputValue = function () {
         $('[data-from-input-value]').each(function (i, tag) {
@@ -375,21 +394,19 @@ var QuinenCake = QuinenCake || {};
 
     }
 
-    this.startLoading = function (anchor) {
-        //console.log('start', new Date());
-        $('#loadingModal').modal({
-            backdrop: 'static'
-        });
-        /*
-        var anchor = anchor || 'body';
-        $(anchor).prepend('<div class="spinner-border"><span class="sr-only">Loading...</span></div>');
-        */
-    }
+    this.startLoading = function () {
+        if (QuinenCake.showLoading) {
+            $('#loadingModal').modal({
+                backdrop: 'static'
+            });
+        }
+    };
 
-    this.stopLoading = function (anchor) {
-        //console.log('stop', new Date());
+    this.stopLoading = function () {
         $('#loadingModal').modal('hide');
-    }
+    };
+
+    this.showLoading = true;
 
     this.listenForLoading = function () {
         var self = this;
@@ -402,7 +419,7 @@ var QuinenCake = QuinenCake || {};
         $('form').submit(function () {
             self.startLoading();
         })
-    }
+    };
 
     this.copyToClipboard = function (b) {
         var a = document.createElement("textarea");
@@ -421,8 +438,8 @@ var QuinenCake = QuinenCake || {};
     this.initPopover = function () {
         $('[data-toggle="popover"]').popover();
 
-        $('[data-toggle="popover"]').on('shown.bs.popover', function() {
-            setTimeout(function() {
+        $('[data-toggle="popover"]').on('shown.bs.popover', function () {
+            setTimeout(function () {
                 $('[data-toggle="popover"]').popover('hide');
             }, 1000);
         });

@@ -48,8 +48,12 @@ trait Bs4DropdownTrait
         $buttonOptions = $this->addClass($buttonOptions, 'dropdown-toggle');
         $dropdown[] = $this->button($button, $buttonOptions);
 
-        // list
-        list($list, $listOptions) = $this->getContentOptions([$list]);
+        // list : critere a revoir :s
+        if(count($list)===2 && isset($list[1]['class'])){
+            list($list, $listOptions) = $list;
+        } else {
+            list($list, $listOptions) = $this->getContentOptions([$list]);
+        }
         $dropdown[] = $this->dropdownList($list, $listOptions);
 
         $content = implode($dropdown);

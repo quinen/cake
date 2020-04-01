@@ -61,7 +61,9 @@ trait Bs4NavbarTrait
         if (isset($navbarLeftRight['center'])) {
             $navbar[] = implode('', Hash::extract($navbarLeftRight['center'], '{n}.0'));
         }
-        $navbar[] = $this->Html->list($navbarLeftRight['right'], ['class' => trim("navbar-nav " . $options['classRight'])]);
+        if (isset($navbarLeftRight['right'])) {
+            $navbar[] = $this->Html->list($navbarLeftRight['right'], ['class' => trim("navbar-nav " . $options['classRight'])]);
+        }
 
         $options = array_diff_key($options, $optionsDefault);
 
@@ -109,7 +111,8 @@ trait Bs4NavbarTrait
                 } else if (isset($elementOptions['raw'])) {
                     $element = $elementOptions['raw'];
                 } else {
-                    $element = $this->Html->div('navbar-text', $element);
+                    $elementOptions = $this->addClass($elementOptions, 'navbar-text');
+                    $element = $this->Html->tag('div', $element, $elementOptions);
                 }
             }
 

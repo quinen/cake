@@ -3,6 +3,7 @@
 namespace QuinenCake\View\Helper;
 
 use Cake\Core\Configure;
+use Cake\Utility\Hash;
 use Cake\View\Helper\FormHelper as BaseHelper;
 
 
@@ -65,6 +66,7 @@ class FormHelper extends BaseHelper
         }
 
         $options = $this->handlePlaceholder($options);
+        $options = $this->handleInputGroup($options);
 
         return parent::control($fieldName, $options);
     }
@@ -142,6 +144,40 @@ class FormHelper extends BaseHelper
         ];
         //debug([$fieldName, $options]);
         return $this->control($fieldName, $options);
+    }
+
+    private function handleInputGroup(array $options)
+    {
+        $options += [
+            'prepend' => false,
+            'append' => false
+        ];
+
+        if ($options['prepend'] || $options['append']) {
+
+            $prepend = $append = false;
+
+            // on va manipuler le template formGroup
+            $templateFormGroupKey = 'templates.formGroup';
+            $templateFormGroup = Hash::get($options, $templateFormGroupKey, $this->getTemplates('formGroup'));
+
+            if($options['prepend']){
+                $prepend = $this->Html->div('input-group-prepend',$options['prepend']);
+            }
+
+            if($options['append']){
+                $append = $this->Html->div('input-group-append',$options['append']);
+            }
+
+            $input = '{{input}}';
+
+            $inputGroup = template('{{prepend}}{{input}}{{append}}',compact('prepend','append','input'));
+            $inputGroup  = $this->Html->div('input-group', $inputGroup);
+            $templateFormGroup = str_replace('{{input}}',$inputGroup,$templateFormGroup);
+            $options = Hash::insert($options, $templateFormGroupKey, $templateFormGroup);
+        }
+
+        return $options;
     }
 
 

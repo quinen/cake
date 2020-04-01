@@ -168,4 +168,13 @@ trait HtmlTrait
 
         return $newValue;
     }
+
+    public function span($class = null, $text = null, array $options = [])
+    {
+        if (!empty($class)) {
+            $options['class'] = $class;
+        }
+
+        return $this->tag('span', $text, $options);
+    }
 }
