@@ -241,3 +241,28 @@ tr.align-middle > td {
     left: auto !important;
     right: 0px;
 }
+
+/*  navTabVertical  */
+.nav-tabs.flex-column .nav-link {
+    border-top-left-radius: .25rem;
+    border-top-right-radius: 0;
+    border-bottom-left-radius: .25rem;
+}
+
+.nav-tabs.flex-column .nav-item.show .nav-link, .nav-tabs.flex-column .nav-link.active {
+    border-color: #dee2e6 #fff #dee2e6 #dee2e6;
+}
+
+.nav-tabs .nav-link:focus, .nav-tabs .nav-link:hover {
+    border-color: #e9ecef #dee2e6 #e9ecef #e9ecef;
+}
+
+.nav-tabs.flex-column .nav-item {
+    margin-right: -1px;
+    margin-bottom: inherit;
+}
+
+.nav-tabs.flex-column {
+    border-bottom: 0px solid #dee2e6;
+    border-right: 1px solid #dee2e6;
+}
