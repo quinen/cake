@@ -241,12 +241,14 @@ var QuinenCake = QuinenCake || {};
             theme: 'bootstrap4',
             language: 'fr',
             allowClear: true,
+            placeholder:"",
             dropdownAutoWidth: true,
             escapeMarkup: function (markup) {
                 return markup;
             },
             templateResult: function (data) {
-                return data.html;
+                // return html if exist else return legacy text
+                return data.html || data.text;
             },
             templateSelection: function (data) {
                 return data.text;

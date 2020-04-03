@@ -204,7 +204,7 @@ class UiHelper extends Helper
             $label = null;
 
             // si une table associée, on a un champ sinon non
-            if ($table) {
+            if ($table && method_exists($table,'getUiFieldLabel')) {
                 $label = $table->getUiFieldLabel($field);
             }
 
@@ -224,7 +224,7 @@ class UiHelper extends Helper
             $table = $this->getTable($pluginController);
             $format = null;
 
-            if ($table) {
+            if ($table && method_exists($table,'getUiFieldFormat')) {
                 $format = $table->getUiFieldFormat($field);
             }
 

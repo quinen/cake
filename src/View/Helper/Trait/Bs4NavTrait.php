@@ -65,6 +65,24 @@ trait Bs4NavTrait
         return $this->card($content, compact(['header']));
     }
 
+    public function navTabVertical($list = [],$options = []){
+        $options +=[
+            'isHtml' => false,
+            'tabsWidth' => 2
+        ];
+
+        $options = $this->addClass($options,'flex-column','tabClass');
+
+        $tabsWidth = $options['tabsWidth'];
+        unset($options['tabsWidth']);
+
+        list($tabs,$contents)= $this->navTab($list,$options);
+        return $this->row([
+            [$tabs,['class'=>'pr-0 border-right-0 col-'.$tabsWidth]]
+            ,[$contents,['class'=>'border border-left-0 rounded-right','style'=>'border-left:0px']]
+        ],['class'=>'mr-1']);
+    }
+
     public function navTab($list = [], $options = [])
     {
         $options += [
