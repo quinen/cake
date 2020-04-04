@@ -253,7 +253,7 @@ tr.align-middle > td {
     border-color: #dee2e6 #fff #dee2e6 #dee2e6;
 }
 
-.nav-tabs .nav-link:focus, .nav-tabs .nav-link:hover {
+.nav-tabs.flex-column .nav-link:focus, .nav-tabs.flex-column .nav-link:hover {
     border-color: #e9ecef #dee2e6 #e9ecef #e9ecef;
 }
 

@@ -13,9 +13,6 @@ trait Bs4NavTrait
             'title' => false,
             'header' => false,
             'buttons' => false,
-            'templates' => [
-                //'header' => '<div class="float-left">{{title}}</div><div class="float-right">{{nav}}</div>'
-            ]
         ];
 
         $navTabOptions = [
@@ -62,7 +59,7 @@ trait Bs4NavTrait
             $header .= $this->Html->div('float-right', $options['header']);
         }
 
-        return $this->card($content, compact(['header']));
+        return $this->card($content, compact(['header'])+$options);
     }
 
     public function navTabVertical($list = [],$options = []){

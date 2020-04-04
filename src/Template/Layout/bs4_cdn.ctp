@@ -45,14 +45,23 @@ if ($showMenu) {
     ];
     //echo $this->element('Layout/breadcrumb', compact(['breadcrumbControllers']));
 }
+echo $this->Html->tag('div', $this->Bs4->progress([[
+    'Chargement', [
+        'isStriped' => true,
+        'isAnimated' => true,
+        'color' => 'danger'
+    ]
 
+]], [
+    'showPct' => false
+]), ['id' => 'loadingProgress','style'=>'display:none;']);
+//echo $this->element('AdminUi.Layout/loading');
+//echo $this->element('AdminUi.Layout/modal');
 echo '<br/>';
 echo $this->Html->div('container-fluid',
     $this->Flash->render() .
     $this->fetch('content')
 );
-//echo $this->element('AdminUi.Layout/loading');
-//echo $this->element('AdminUi.Layout/modal');
 // JS   ////////////////////////////////////////////////////////////////////////
 
 // librairies

@@ -30,7 +30,6 @@ trait Bs4CardTrait
             'color' => 'white'
         ];
 
-
         if (!$options['header']) {
             $options['header'] = [];
 
@@ -54,38 +53,53 @@ trait Bs4CardTrait
 
             $options['header'] = implode($options['header']);
         }
+        unset($options['title']);
+        unset($options['buttons']);
 
         $header = null;
         if ($options['header']) {
             $header = $this->Html->div('card-header pr-2-5', $options['header']);
             //$header = $this->Html->div('card-header', $options['header']);
         }
+        unset($options['header']);
 
         $body = null;
         if ($options['body']) {
             $body = $this->Html->div('card-body', $options['body']);
         }
+        unset($options['body']);
 
 
         $content = null;
         if ($options['content']) {
             $content = $options['content'];
         }
+        unset($options['content']);
 
         $footer = null;
         if ($options['footer']) {
             $footer = $this->Html->div('card-footer', $options['footer']);
         }
+        unset($options['footer']);
 
-        $cardClass = '';
+
         if ($options['color']) {
-            $cardClass .= ' bg-' . $options['color'];
-            if ($options['color'] === 'dark') {
-                $cardClass .= ' text-white';
-            }
-        }
+            $colorClasses = 'bg-' . $options['color'];
 
-        return $this->Html->div('card' . $cardClass, $header . $body . $content . $footer);
+
+            if ($options['color'] === 'dark') {
+                $colorClasses .= ' text-white';
+            }
+
+            $options = $this->addClass($options, $colorClasses);
+        }
+        unset($options['color']);
+
+        $options = $this->addClass($options, 'card');
+        $class = $options['class'];
+        unset($options['class']);
+
+        return $this->Html->div($class, $header . $body . $content . $footer, $options);
     }
 
     public function formInCard($controls, $controlsOptions = [], $cardOptions = [])

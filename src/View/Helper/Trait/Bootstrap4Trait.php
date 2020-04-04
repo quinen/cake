@@ -310,6 +310,7 @@ trait Bootstrap4Trait
                 'width' => 100, // value in pct
                 'color' => false,
                 'isStriped' => false,
+                'isAnimated' => false,
             ];
 
             $pct = round($barOptions['width'], 1) . '%';
@@ -335,6 +336,12 @@ trait Bootstrap4Trait
                 $class .= ' progress-bar-striped';
             }
             unset($barOptions['isStriped']);
+
+            // striped
+            if ($barOptions['isAnimated']) {
+                $class .= ' progress-bar-animated';
+            }
+            unset($barOptions['isAnimated']);
 
             if ($options['showPct']) {
                 $bar .= '<h6>' . $this->badge('light', $pct) . '</h6>';

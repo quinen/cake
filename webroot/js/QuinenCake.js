@@ -401,11 +401,13 @@ var QuinenCake = QuinenCake || {};
             $('#loadingModal').modal({
                 backdrop: 'static'
             });
+            $('#loadingProgress').show();
         }
     };
 
     this.stopLoading = function () {
         $('#loadingModal').modal('hide');
+        $('#loadingProgress').hide();
     };
 
     this.showLoading = true;
