@@ -75,7 +75,7 @@ class IndexController extends AppController
                     unset($fieldInfos['fixed']);
                     unset($fieldInfos['unsigned']);
                     unset($fieldInfos['autoIncrement']);
-                    if(!empty($fieldInfos)){
+                    if (!empty($fieldInfos)) {
                         debug($fieldInfos);
                     }
 
@@ -89,6 +89,26 @@ class IndexController extends AppController
         }
 
         $this->set(compact('bdds'));
+    }
+
+    public function colors()
+    {
+        $hexas = ['00', '40', '80', 'c0', 'ff'];
+        $colors = [];
+        foreach ($hexas as $r) {
+            foreach ($hexas as $g) {
+                foreach ($hexas as $b) {
+                    $filter = ($r >= $g && $r >= $b);
+                    if($filter){
+                        $colors[] = [
+                            'rgb' => '#' . $r . $g . $b
+                        ];
+                    }
+
+                }
+            }
+        }
+        $this->set(compact('colors'));
     }
 
     public function test()

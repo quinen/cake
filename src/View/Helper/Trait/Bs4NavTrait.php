@@ -13,11 +13,13 @@ trait Bs4NavTrait
             'title' => false,
             'header' => false,
             'buttons' => false,
+            'linked' => false
         ];
 
         $navTabOptions = [
             'isHtml' => false,
-            'tabClass' => "card-header-tabs"
+            'tabClass' => "card-header-tabs",
+            'linked' => $options['linked']
         ];
 
         // injection titre en premier tab
@@ -59,25 +61,26 @@ trait Bs4NavTrait
             $header .= $this->Html->div('float-right', $options['header']);
         }
 
-        return $this->card($content, compact(['header'])+$options);
+        return $this->card($content, compact(['header']) + $options);
     }
 
-    public function navTabVertical($list = [],$options = []){
-        $options +=[
+    public function navTabVertical($list = [], $options = [])
+    {
+        $options += [
             'isHtml' => false,
             'tabsWidth' => 2
         ];
 
-        $options = $this->addClass($options,'flex-column','tabClass');
+        $options = $this->addClass($options, 'flex-column', 'tabClass');
 
         $tabsWidth = $options['tabsWidth'];
         unset($options['tabsWidth']);
 
-        list($tabs,$contents)= $this->navTab($list,$options);
+        list($tabs, $contents) = $this->navTab($list, $options);
         return $this->row([
-            [$tabs,['class'=>'pr-0 border-right-0 col-'.$tabsWidth]]
-            ,[$contents,['class'=>'border border-left-0 rounded-right','style'=>'border-left:0px']]
-        ],['class'=>'mr-1']);
+            [$tabs, ['class' => 'pr-0 border-right-0 col-' . $tabsWidth]]
+            , [$contents, ['class' => 'border border-left-0 rounded-right', 'style' => 'border-left:0px']]
+        ], ['class' => 'mr-1']);
     }
 
     public function navTab($list = [], $options = [])

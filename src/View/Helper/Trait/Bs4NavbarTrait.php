@@ -84,9 +84,11 @@ trait Bs4NavbarTrait
             list($element, $elementOptions) = $this->Html->getIconText($elementOptions + ['text' => $element]);
             // linkify
             if ($this->Html->isLinkExistInOptions($elementOptions)) {
-                list($element, $elementOptions) = $this->Html->linkify($element, $elementOptions,
-                    ['class' => "nav-link"]);
-
+                list($element, $elementOptions) = $this->Html->linkify(
+                    $element,
+                    $elementOptions,
+                    ['class' => "nav-link"]
+                );
             } else {
                 if (isset($elementOptions['list'])) {
 
@@ -105,6 +107,8 @@ trait Bs4NavbarTrait
                     ];
                     unset($elementOptions['title']);
 
+                    // on elimine les classes superficielle dans l'element de titre, seul le bouton doit la recevoir
+                    $elementOptions['class'] = '';
                     $elementOptions = $this->Html->addClass($elementOptions, 'dropdown');
                     $element = $this->dropdown($button, $list, ['inDiv' => false]);
 

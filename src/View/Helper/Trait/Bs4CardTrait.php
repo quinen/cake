@@ -27,7 +27,7 @@ trait Bs4CardTrait
             'body' => false,
             'footer' => false,
             'content' => false,
-            'color' => 'white'
+            'color' => false
         ];
 
         if (!$options['header']) {
@@ -84,13 +84,7 @@ trait Bs4CardTrait
 
 
         if ($options['color']) {
-            $colorClasses = 'bg-' . $options['color'];
-
-
-            if ($options['color'] === 'dark') {
-                $colorClasses .= ' text-white';
-            }
-
+            $colorClasses = 'alert-' . $options['color'];
             $options = $this->addClass($options, $colorClasses);
         }
         unset($options['color']);

@@ -9,10 +9,10 @@ Router::plugin(
     ['path' => '/quinen'],
     function (RouteBuilder $routes) {
         $routes->connect(
-            '/bdd',
+            '/:action',
             [
                 'controller' => 'Index',
-                'action' => 'bdd'
+                //'action' => 'bdd'
             ]
         );
         $routes->fallbacks(DashedRoute::class);

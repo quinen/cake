@@ -9,7 +9,11 @@ use Cake\Utility\Inflector;
 use Cake\View\Helper;
 use QuinenLib\Arrays\ContentOptionsTrait;
 
-
+/**
+ * Class UiHelper
+ * @package QuinenCake\View\Helper
+ * @property \CpaGestion\View\Helper\HtmlHelper $Html
+ */
 class UiHelper extends Helper
 {
     use ContentOptionsTrait;
