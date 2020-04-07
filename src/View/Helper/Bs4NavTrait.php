@@ -52,6 +52,7 @@ trait Bs4NavTrait
         list($nav, $content) = $this->navTab($navTab, $navTabOptions);
 
         $header = $this->Html->div('float-left', $nav);
+        //$header = $nav;
 
         if (!$options['header'] && $options['buttons']) {
             $options['header'] = $this->buttons($options['buttons'], ['size' => 'xs']);

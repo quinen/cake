@@ -438,7 +438,8 @@ trait FontAwesome5Trait
     {
         $options += [
             'size' => 1,
-            'stackSize' => [2, 1]
+            'stackSize' => [2, 1],
+            'isIcon' => [true, true]
         ];
 
         $options = $this->addClass($options, 'fa-stack');
@@ -453,13 +454,21 @@ trait FontAwesome5Trait
         $stackSize = $options['stackSize'];
         unset($options['stackSize']);
 
-        list($iconBackIcon, $iconBackOptions) = $this->getContentOptions($iconBack);
-        $iconBackOptions += ['stackSize' => Hash::get($stackSize, 0)];
-        $iBack = $this->fa5($iconBackIcon, $iconBackOptions);
+        if ($options['isIcon'][0]) {
+            list($iconBackIcon, $iconBackOptions) = $this->getContentOptions($iconBack);
+            $iconBackOptions += ['stackSize' => Hash::get($stackSize, 0)];
+            $iBack = $this->fa5($iconBackIcon, $iconBackOptions);
+        }
 
         list($iconFrontIcon, $iconFrontOptions) = $this->getContentOptions($iconFront);
         $iconFrontOptions += ['stackSize' => Hash::get($stackSize, 1)];
-        $iFront = $this->fa5($iconFrontIcon, $iconFrontOptions);
+        if ($options['isIcon'][1]) {
+            $iFront = $this->fa5($iconFrontIcon, $iconFrontOptions);
+        } else {
+            $iconFrontOptions = $this->addClass($iconFrontOptions,'fa-stack-'.$iconFrontOptions['stackSize'].'x');
+            unset($iconFrontOptions['stackSize']);
+            $iFront = $this->tag('span', $iconFrontIcon, $iconFrontOptions);
+        }
 
         return $this->tag('span', $iBack . $iFront, $options);
     }
@@ -567,7 +576,7 @@ trait FontAwesome5Trait
                 if ($name && in_array($name, $this->_iconsStyleRegular)) {
                     $style = $this->_iconStylePrefixes['regular'];
                 } else {
-                    $style = $this->_iconStylePrefixes['solid'];
+                    $style = $this->_iconStylePrefixes['light'];
                 }
             }
         }

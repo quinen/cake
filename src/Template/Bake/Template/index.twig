@@ -36,9 +36,9 @@ $navTabs = [
 
 echo $this->Bs4->navTabInCard($navTabs, [
     'title' => $this->Ui->getTitle(true, '{{ modelClass }}', [
-        'template' => '{{icon}} ' . $this->Paginator->params()['count'] . ' {{text}}'
+        'template' => '{{'{{'}}icon{{ '}}' }} ' . $this->Paginator->param('count') . ' {{'{{'}}text{{'}}'}}'
     ]),
-    'header' => $this->Bs4->buttons(['add'],['size' => 'xs'])
+    'header' => $this->Bs4->buttons(['add'], ['size' => 'xs'])
 ]);
 {#
 ?>
