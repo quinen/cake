@@ -13,13 +13,11 @@ trait Bs4NavTrait
             'title' => false,
             'header' => false,
             'buttons' => false,
-            'linked' => false
         ];
 
         $navTabOptions = [
-            'isHtml' => false,
+            'returnIsHtml' => false,
             'tabClass' => "card-header-tabs",
-            'linked' => $options['linked']
         ];
 
         // injection titre en premier tab
@@ -48,19 +46,22 @@ trait Bs4NavTrait
                 'isActiveDefault' => 1
             ];
         }
-
-        list($nav, $content) = $this->navTab($navTab, $navTabOptions);
-
-        $header = $this->Html->div('float-left', $nav);
-        //$header = $nav;
+        unset($options['title']);
 
         if (!$options['header'] && $options['buttons']) {
             $options['header'] = $this->buttons($options['buttons'], ['size' => 'xs']);
         }
+        unset($options['buttons']);
 
+        $headerRight = '';
         if ($options['header']) {
-            $header .= $this->Html->div('float-right', $options['header']);
+            $headerRight = $this->Html->div('float-right', $options['header']);
         }
+        unset($options['header']);
+
+        list($nav, $content) = $this->navTab($navTab, $navTabOptions + $options);
+
+        $header = $this->Html->div('float-left', $nav) . $headerRight;
 
         return $this->card($content, compact(['header']) + $options);
     }
@@ -68,7 +69,7 @@ trait Bs4NavTrait
     public function navTabVertical($list = [], $options = [])
     {
         $options += [
-            'isHtml' => false,
+            'returnIsHtml' => false,
             'tabsWidth' => 2
         ];
 
@@ -86,11 +87,14 @@ trait Bs4NavTrait
 
     public function navTab($list = [], $options = [])
     {
+        // class ne dois et ne peux exister
+        unset($options['class']);
         $options += [
             'id' => 'i' . Text::uuid(),
-            'isHtml' => true,
+            'returnIsHtml' => true,
             'tabClass' => false,
-            'isActiveDefault' => 0
+            'isActiveDefault' => 0,
+            'name' => false
         ];
 
         // si aucun des elements n'as l'options isActive a true, alors on set le premier par defaut
@@ -109,10 +113,20 @@ trait Bs4NavTrait
             'isActive' => false,
             'isDisabled' => false,
             'color' => false,
+            'name' => false
         ];
 
         // options par defaut pour chaque tabContent
         $navTab = collection($list)->map(function ($tabContent, $index) use ($options, $tabContentDefault) {
+            //debug($options);
+            //debug($tabContent);
+            //debug($tabContentDefault);
+            if ($options['name']) {
+                $name = (isset($tabContent['name']) && $tabContent['name'] ? $tabContent['name'] : $index);
+                $tabContentDefault['data-name'] = $options['name'] . $name;
+            }
+
+            //debug($tabContentDefault);
 
             return $tabContent += $tabContentDefault +
                 [
@@ -143,6 +157,10 @@ trait Bs4NavTrait
                     $linkOptions = $this->Html->addClass($linkOptions,
                         'border-bottom-0 border-' . $tabContent['color']);
                     $linkOptions = $this->Html->addClass($linkOptions, 'btn-outline-' . $tabContent['color']);
+                }
+
+                if(isset($tabContent['data-name'])){
+                    $linkOptions['data-name'] = $tabContent['data-name'];
                 }
 
                 // tab
@@ -204,7 +222,7 @@ trait Bs4NavTrait
             ]
         );
 
-        if (!$options['isHtml']) {
+        if (!$options['returnIsHtml']) {
             return [$nav, $content];
         }
         return $nav . $content;

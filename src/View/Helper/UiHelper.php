@@ -84,7 +84,7 @@ class UiHelper extends Helper
 
         $options += [
             'action' => $action,
-            'isHtml' => true
+            'returnIsHtml' => true
         ];
 
         if (isset($models[$options['action']])) {
@@ -104,10 +104,10 @@ class UiHelper extends Helper
             $options = compact('icon', 'text');
         }*/
 
-        if ($options['isHtml']) {
+        if ($options['returnIsHtml']) {
             return $this->Html->iconText($options['icon'], $options['text']);
         } else {
-            unset($options['isHtml']);
+            unset($options['returnIsHtml']);
             return $options;
         }
 

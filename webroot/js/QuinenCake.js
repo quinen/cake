@@ -14,6 +14,7 @@ var QuinenCake = QuinenCake || {};
         this.initDatepicker();
         this.listenForLoading();
         this.initPopover();
+        this.listenOnClickTabName();
     };
 
     // ajax link
@@ -116,6 +117,8 @@ var QuinenCake = QuinenCake || {};
 
         QuinenCake.onSuccessAjaxLink($event, '', status, xhr);
     };
+
+
     this.listenOnCloseTabLink = function () {
 
         $('ul.nav-tabs').on('click', 'li a .close', function () {
@@ -241,7 +244,7 @@ var QuinenCake = QuinenCake || {};
             theme: 'bootstrap4',
             language: 'fr',
             allowClear: true,
-            placeholder:"",
+            placeholder: "",
             dropdownAutoWidth: true,
             escapeMarkup: function (markup) {
                 return markup;
@@ -448,6 +451,14 @@ var QuinenCake = QuinenCake || {};
             }, 1000);
         });
     };
+
+    this.listenOnClickTabName = function () {
+        $('a[data-toggle]').on('shown.bs.tab', function (event) {
+            var name = event.target.dataset['name'];
+            $('a[data-name="' + name + '"]').tab('show');
+        })
+    };
+
 }).apply(QuinenCake);
 
 

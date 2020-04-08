@@ -169,8 +169,8 @@ trait Bootstrap4Trait
 
         $options = $this->addClass($options, 'mx-auto alert alert-' . $model);
 
-        if(is_array($content)){
-            $content = implode('<br/>',$content);
+        if (is_array($content)) {
+            $content = implode('<br/>', $content);
         }
 
         if ($options['isDismissible']) {
@@ -300,7 +300,8 @@ trait Bootstrap4Trait
     public function progress($bars, $options = [])
     {
         $options += [
-            'showPct' => true
+            'showPct' => true,
+            'height' => '1em'
         ];
 
         $progressBars = collection($bars)->map(function ($bar) use ($options) {
@@ -313,12 +314,12 @@ trait Bootstrap4Trait
                 'isAnimated' => false,
             ];
 
-            $pct = round($barOptions['width'], 1) . '%';
-
             // style
-            $barOptions['style'] = [];
+
             if ($barOptions['width']) {
-                $barOptions['style'][] = 'width:' . $pct;
+                $pct = round($barOptions['width'], 1) . '%';
+                $barOptions = $this->addClass($barOptions, 'width:' . $pct.';', 'style');
+
             }
             unset($barOptions['width']);
 
@@ -344,19 +345,21 @@ trait Bootstrap4Trait
             unset($barOptions['isAnimated']);
 
             if ($options['showPct']) {
-                $bar .= '<h6>' . $this->badge('light', $pct) . '</h6>';
+                $bar .= $this->badge('light', $pct);
             }
 
             return $this->Html->div($class, $bar, $barOptions);
         })->toArray();
-
-        $options['style'] = [];
-        if ($options['showPct']) {
-            $options['style'][] = 'height:4em';
-        }
         unset($options['showPct']);
 
-        return $this->Html->div('progress', $progressBars, $options);
+        if ($options['height']) {
+            $options = $this->addClass($options, 'height:' . $options['height'], 'style');
+        }
+        unset($options['height']);
+
+        $options = $this->addClass($options, 'progress');
+
+        return $this->Html->tag('div', $progressBars, $options);
     }
 
     public function getCurrentContext()
