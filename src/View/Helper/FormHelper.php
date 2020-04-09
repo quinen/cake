@@ -155,25 +155,40 @@ class FormHelper extends BaseHelper
 
         if ($options['prepend'] || $options['append']) {
 
-            $prepend = $append = false;
+            $prependDiv = $appendDiv = false;
 
             // on va manipuler le template formGroup
             $templateFormGroupKey = 'templates.formGroup';
             $templateFormGroup = Hash::get($options, $templateFormGroupKey, $this->getTemplates('formGroup'));
 
-            if($options['prepend']){
-                $prepend = $this->Html->div('input-group-prepend',$options['prepend']);
+            if ($options['prepend']) {
+                if (is_array($options['prepend'])) {
+                    list($prepend, $prependOptions) = $this->Html->getIconText($options['prepend']);
+                    $prepend = $this->Html->span('input-group-text', $prepend, $prependOptions);
+                } else {
+                    $prepend = $options['prepend'];
+                }
+
+                $prependDiv = $this->Html->div('input-group-prepend', $prepend);
             }
 
-            if($options['append']){
-                $append = $this->Html->div('input-group-append',$options['append']);
+            if ($options['append']) {
+
+                if (is_array($options['append'])) {
+                    list($append, $appendOptions) = $this->Html->getIconText($options['append']);
+                    $append = $this->Html->span('input-group-text', $append, $appendOptions);
+                } else {
+                    $append = $options['append'];
+                }
+
+                $appendDiv = $this->Html->div('input-group-prepend', $append);
             }
 
             $input = '{{input}}';
 
-            $inputGroup = template('{{prepend}}{{input}}{{append}}',compact('prepend','append','input'));
-            $inputGroup  = $this->Html->div('input-group', $inputGroup);
-            $templateFormGroup = str_replace('{{input}}',$inputGroup,$templateFormGroup);
+            $inputGroup = template('{{prependDiv}}{{input}}{{appendDiv}}', compact('prependDiv', 'appendDiv', 'input'));
+            $inputGroup = $this->Html->div('input-group', $inputGroup);
+            $templateFormGroup = str_replace('{{input}}', $inputGroup, $templateFormGroup);
             $options = Hash::insert($options, $templateFormGroupKey, $templateFormGroup);
         }
 
