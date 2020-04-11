@@ -275,6 +275,7 @@ trait LinkTrait
             'success' => $this->linkFunctionPlugin . '.onSuccessTabLink',
             'error' => $this->linkFunctionPlugin . '.onErrorAjaxLink',
             'data-show-on-click' => true,
+            'data-parent' => 0
         ];
 
         $options['ajaxLink'] = [$tab, $tabOptions];

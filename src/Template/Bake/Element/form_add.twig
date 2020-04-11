@@ -6,11 +6,13 @@
 
 use Cake\Utility\Hash;
 
+$actionTitle = $this->Ui->getActionTitle(null, ['returnIsHtml' => false]);
+
 echo $this->Html->div(
     'tab-link-title',
     $this->Html->iconText(
-{% if strpos(action, 'add') is same as(false) %}
-        'pencil-alt',
+
+        $actionTitle['icon'],
         [
             Hash::get(${{ singularVar }}, '{{ displayField }}'),
             [
@@ -18,20 +20,9 @@ echo $this->Html->div(
             ]
         ],
         [
-            'template' => '{{icon}} Modifier {{text}}'
+            'template' => '{{ '{{' }}icon{{ '}}'}} ' . $actionTitle['text'] . ' {{ '{{' }}text{{ '}}'}}'
         ]
-{% else %}
-        'plus',
-        [
-            Hash::get(${{ singularVar }}, '{{ displayField }}').'',
-            [
-                'data-from-input-value' => '{{ displayField }}'
-            ]
-        ],
-        [
-            'template' => '{{icon}} Ajouter {{text}}'
-        ]
-{% endif %}
+
     )
 );
 

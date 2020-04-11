@@ -82,8 +82,7 @@ var QuinenCake = QuinenCake || {};
 
         // si tab n'existe pas deja
         if ($("#t-" + id + "").length == 0) {
-
-            var $ul = $link.parents('.card:first').find('ul.card-header-tabs:first');
+            var $ul = $link.parents('.card').eq($link.data('parent')).find('ul.card-header-tabs:first');
             var $divs = $('#c-' + $ul.attr('id') + '');
 
             // on genere les tab et content
@@ -111,6 +110,7 @@ var QuinenCake = QuinenCake || {};
             if ($link.data('showOnClick')) {
                 $("#t-" + id + " > a").tab('show');
             }
+            this.updateFromInputValue()
         } else {
             //console.debug('onSuccessTabLink', "#t-" + id + "");
         }
