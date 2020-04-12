@@ -170,54 +170,12 @@ trait LinkTrait
         list($ajax, $ajaxOptions) = $this->getContentOptions($options['ajaxLink']);
 
         $ajaxOptions += [
-            'id' => Text::uuid(),
-            'url' => $this->Url->build($ajax),
-            'beforeSend' => $this->linkFunctionPlugin . '.onBeforeSendAjaxLink',
-            'success' => $this->linkFunctionPlugin . '.onSuccessAjaxLink',
-            'error' => $this->linkFunctionPlugin . '.onErrorAjaxLink',
+            'data-href' => $this->Url->build($ajax)
         ];
 
-        $functionOptions = [
-            'beforeSend' => 'xhr,options',
-            'success' => 'data,status,xhr',
-            'error' => 'xhr,status,error'
-        ];
-
-        // on enrobe le nom des fonctions dans une fonction anonyme
-        $ajaxOptions = collection($ajaxOptions)->filter(
-                function ($v, $k) use ($functionOptions) {
-                    return array_key_exists($k, $functionOptions);
-                }
-            )->map(
-                function ($option, $k) use ($functionOptions) {
-                    return 'function(' . $functionOptions[$k] . '){return ' . $option .
-                        '($event,' . $functionOptions[$k] . ');}';
-                }
-            )->toArray() + $ajaxOptions;
-
-        // on vire les options inconnues de jquery.ajax
-        $jqueryAjaxOptions = array_flip(['url', 'data', 'method']);
-        $linkOptions = array_diff_key($ajaxOptions, $functionOptions + $jqueryAjaxOptions);
-        $ajaxOptions = array_diff_key($ajaxOptions, $linkOptions);
-
-        $options['link'] = ['#', $linkOptions];
-        // fin de l'ecriture du lien
-
-
-        $js = Text::insert(
-            '$(function(){$(\'#:id\').on("click",function($event){' .
-            '$.ajax(:eventData);' .
-            'return false;});});',
-            [
-                'id' => $linkOptions['id'],
-                'eventData' => Tools::jsonEncodeWithFunction($ajaxOptions)
-            ]
-        );
-
-        echo $this->getView()->Html->scriptBlock($js, ['block' => 'script']);
+        $options['link'] = ['#', $ajaxOptions];
 
         unset($options['ajaxLink']);
-
         return $options;
     }
 
@@ -254,9 +212,7 @@ trait LinkTrait
         list($modal, $modalOptions) = $this->getContentOptions($options[$key]);
 
         $modalOptions += [
-            'beforeSend' => $this->linkFunctionPlugin . '.onBeforeSendModalLink',
-            'success' => $this->linkFunctionPlugin . '.onSuccessModalLink',
-            'error' => $this->linkFunctionPlugin . '.onErrorAjaxLink',
+            'data-link' => 'modal'
         ];
 
         $options['ajaxLink'] = [$modal, $modalOptions];
@@ -271,15 +227,12 @@ trait LinkTrait
         list($tab, $tabOptions) = $this->getContentOptions($options['tabLink']);
 
         $tabOptions += [
-            'beforeSend' => $this->linkFunctionPlugin . '.onBeforeSendTabLink',
-            'success' => $this->linkFunctionPlugin . '.onSuccessTabLink',
-            'error' => $this->linkFunctionPlugin . '.onErrorAjaxLink',
+            'data-link' => 'tab',
             'data-show-on-click' => true,
             'data-parent' => 0
         ];
 
         $options['ajaxLink'] = [$tab, $tabOptions];
-
         unset($options['tabLink']);
 
         return $options;
@@ -292,9 +245,7 @@ trait LinkTrait
         list($tr, $trOptions) = $this->getContentOptions($options['trLink']);
 
         $trOptions += [
-            'beforeSend' => $this->linkFunctionPlugin . '.onBeforeSendTrLink',
-            'success' => $this->linkFunctionPlugin . '.onSuccessTrLink',
-            'error' => $this->linkFunctionPlugin . '.onErrorAjaxLink',
+            'data-link' => 'tr'
         ];
 
         $options['ajaxLink'] = [$tr, $trOptions];

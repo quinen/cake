@@ -4,6 +4,7 @@ var QuinenCake = QuinenCake || {};
     'use strict';
 
     this.onLoad = function () {
+        console.debug('QuinenCake.onLoad');
         this.listenOnCloseTabLink();
 
         //this.redirectPaginatorLink();
@@ -15,6 +16,8 @@ var QuinenCake = QuinenCake || {};
         this.listenForLoading();
         this.initPopover();
         this.listenOnClickTabName();
+        this.listenOnSubmitCloseTab();
+        this.listenOnClickDataHref();
     };
 
     // ajax link
@@ -35,6 +38,7 @@ var QuinenCake = QuinenCake || {};
         } else {
             $link.html($link.data('oldHtml'));
         }
+        this.onLoad();
     };
 
     this.onErrorAjaxLink = function ($event, xhr, status, error) {
@@ -81,7 +85,7 @@ var QuinenCake = QuinenCake || {};
         var id = $link.attr('id');
 
         // si tab n'existe pas deja
-        if ($("#t-" + id + "").length == 0) {
+        if ($("#t-" + id + "").length === 0) {
             var $ul = $link.parents('.card').eq($link.data('parent')).find('ul.card-header-tabs:first');
             var $divs = $('#c-' + $ul.attr('id') + '');
 
@@ -95,7 +99,7 @@ var QuinenCake = QuinenCake || {};
                 '</a></li>'
             );
 
-            var $div = $('<div class="tab-pane" id="c-' + id + '">' + data + '</div>');
+            var $div = $('<div class="tab-pane" id="c-' + id + '">' + data.content + '</div>');
 
             $ul.append($li);
             $divs.append($div);
@@ -110,7 +114,6 @@ var QuinenCake = QuinenCake || {};
             if ($link.data('showOnClick')) {
                 $("#t-" + id + " > a").tab('show');
             }
-            this.updateFromInputValue()
         } else {
             //console.debug('onSuccessTabLink', "#t-" + id + "");
         }
@@ -269,7 +272,7 @@ var QuinenCake = QuinenCake || {};
     this.updateFromInputValue = function () {
         $('[data-from-input-value]').each(function (i, tag) {
             var fieldName = this.dataset.fromInputValue;
-            var input = document.getElementsByName(fieldName);
+            var input = document.getElementById(fieldName.replace(/[._]/g, '-'));
             $(input).keyup(function (e) {
                 tag.innerHTML = e.target.value;
             });
@@ -452,12 +455,74 @@ var QuinenCake = QuinenCake || {};
         });
     };
 
+    // synchronise les sous onglet ayant le meme nom
     this.listenOnClickTabName = function () {
         $('a[data-toggle]').on('shown.bs.tab', function (event) {
             var name = event.target.dataset['name'];
             $('a[data-name="' + name + '"]').tab('show');
         })
     };
+
+    this.renderFlash = function (_message) {
+        $('.alert-dismissible').remove();
+        return _message.map(function (msg) {
+            var type = msg.params.class || 'danger';
+            return '<div class="alert alert-' + type + ' alert-dismissible fade show" role="alert">\n' +
+                msg.message +
+                '  <button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
+                '    <span aria-hidden="true">&times;</span>\n' +
+                '  </button>\n' +
+                '</div>';
+        }).join('');
+
+    }
+    // 'data-close-tab-on-submit' => 1
+    this.listenOnSubmitCloseTab = function () {
+        var that = this;
+        $('form[data-close-tab-on-submit=1]').on('submit', function (event) {
+            var form = $(this);
+            $.ajax({
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                },
+                type: form.attr('method'),
+                url: form.attr('action'),
+                data: form.serialize()
+            }).done(function (response, textStatus, xhr) {
+                form.parents('.container-fluid:first').prepend(QuinenCake.renderFlash(response._message));
+                var paneId = form.parents('.tab-pane:first').attr('id');
+                $('a[data-target="#' + paneId + '"] .close').click();
+            }).fail(function (response) {
+                form.parents('.container-fluid:first').prepend(QuinenCake.renderFlash(response._message));
+                // Optionally alert the user of an error here...
+                console.dir(arguments);
+                form.prepend(response.content);
+            });
+
+
+            that.stopLoading();
+            event.preventDefault();
+            event.stopPropagation();
+
+        });
+    };
+
+    this.listenOnClickDataHref = function () {
+        $('a[data-href]').on('click', function (event) {
+            var link = event.target.dataset.link || 'ajax';
+            link = link.charAt(0).toUpperCase() + link.slice(1);
+            $.ajax({
+                url: event.target.dataset.href,
+                beforeSend: function (xhr, settings) {
+                    QuinenCake['onBeforeSend' + link + 'Link'].apply(QuinenCake, [event, xhr])
+                }
+            }).done(function (data, status, xhr) {
+                QuinenCake['onSuccess' + link + 'Link'].apply(QuinenCake, [event, data, status, xhr])
+            }).fail(function (xhr, status, error) {
+                QuinenCake['onErrorAjaxLink'].apply(QuinenCake, [event, xhr, status, error])
+            })
+        });
+    }
 
 }).apply(QuinenCake);
 
