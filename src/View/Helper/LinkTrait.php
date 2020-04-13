@@ -170,6 +170,7 @@ trait LinkTrait
         list($ajax, $ajaxOptions) = $this->getContentOptions($options['ajaxLink']);
 
         $ajaxOptions += [
+            'id' => Text::uuid(),
             'data-href' => $this->Url->build($ajax)
         ];
 

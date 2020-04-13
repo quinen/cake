@@ -48,7 +48,7 @@ trait Bs4NavTrait
         }
         unset($options['title']);
 
-        if (!$options['header'] && $options['buttons']) {
+        if (!$options['header'] && !empty($options['buttons'])) {
             $options['header'] = $this->buttons($options['buttons'], ['size' => 'xs']);
         }
         unset($options['buttons']);
