@@ -60,6 +60,7 @@
     flex: 0 0 87.5%;
     max-width: 87.5%;
 }
+
 /*
 .card > .card-body {
     padding: 0.75rem;
@@ -160,7 +161,7 @@ input[type="checkbox"] {
     -moz-appearance: none;
     appearance: none;
 
-    font-family: 'Font Awesome 5 Pro','Font Awesome 5 Free', monospace;
+    font-family: 'Font Awesome 5 Pro', 'Font Awesome 5 Free', monospace;
     font-weight: 900;
 
     width: 1.5rem;
@@ -266,3 +267,16 @@ tr.align-middle > td {
     border-bottom: 0px solid #dee2e6;
     border-right: 1px solid #dee2e6;
 }
+
+.required > input,
+.required > select,
+.required > textarea,
+.required > .select2-container > .selection > .select2-selection {
+    border-left: var(--red) solid 3px;
+}
+/*
+.required > label:after {
+    content: ' *';
+    color: var(--red);
+}*/
+

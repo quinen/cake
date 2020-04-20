@@ -75,7 +75,6 @@ var QuinenCake = QuinenCake || {};
         } else {
             $link.html($link.data('oldHtml'));
         }
-        this.onLoad();
     };
 
     this.onErrorAjaxLink = function ($event, xhr, status, error) {
@@ -176,6 +175,7 @@ var QuinenCake = QuinenCake || {};
         );
 
         QuinenCake.onSuccessAjaxLink(event, '', status, xhr);
+        QuinenCake.initSelect2();
     };
 
 
@@ -194,10 +194,8 @@ var QuinenCake = QuinenCake || {};
             }
         );
 
-        QuinenCake.onErrorAjaxLink(event,xhr,status,error);
+        QuinenCake.onErrorAjaxLink(event, xhr, status, error);
     };
-
-
 
 
     this.listenOnCloseTabLink = function () {
@@ -578,14 +576,14 @@ var QuinenCake = QuinenCake || {};
             $.ajax({
                 url: event.target.dataset.href,
                 beforeSend: function (xhr, settings) {
-                    console.log(link,'beforeSend');
+                    console.log(link, 'beforeSend');
                     QuinenCake['onBeforeSend' + link + 'Link'].apply(QuinenCake, [event, xhr])
                 }
             }).done(function (data, status, xhr) {
-                console.log(link,'done');
+                console.log(link, 'done');
                 QuinenCake['onSuccess' + link + 'Link'].apply(QuinenCake, [event, data, status, xhr])
             }).fail(function (xhr, status, error) {
-                console.log(link,'fail');
+                console.log(link, 'fail');
                 QuinenCake['onError' + (link === 'Tab' ? link : 'Ajax') + 'Link'].apply(QuinenCake, [event, xhr, status, error])
             })
         });
