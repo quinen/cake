@@ -1,4 +1,41 @@
+var Quinen = Quinen || {};
 var QuinenCake = QuinenCake || {};
+
+(function () {
+    'use strict';
+
+    this.copyToClipboard = function (v) {
+        var d = document;
+        var t = d.createElement("textarea");
+        t.value = v;
+        t.setAttribute("readonly", "");
+        t.style.position = "absolute";
+        t.style.left = "-9999px";
+        d.body.appendChild(t);
+        v = 0 < d.getSelection().rangeCount ? d.getSelection().getRangeAt(0) : !1;
+        t.select();
+        d.execCommand("copy");
+        d.body.removeChild(t);
+        v && (d.getSelection().removeAllRanges(), d.getSelection().addRange(v));
+    };
+
+    this.optionsDefault = function (obj, def) {
+        obj = obj || {};
+        for (const k in def) {
+            if (typeof obj[k] === 'undefined') {
+                obj[k] = def[k];
+            }
+        }
+        return obj;
+    };
+
+    this.uuid = function () {
+        return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+            (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+        );
+    }
+
+}).apply(Quinen);
 
 (function () {
     'use strict';
@@ -42,13 +79,12 @@ var QuinenCake = QuinenCake || {};
     };
 
     this.onErrorAjaxLink = function ($event, xhr, status, error) {
-        if (xhr.status == 403) {
+        if (xhr.status === 403) {
             document.location.reload(true);
         }
         var $link = $($event.currentTarget);
-        // trop radical
-        //$link.html(xhr.responseText);
-        $link.html(xhr.status + ' (' + error + ')');
+        var html = xhr.status + ' (' + error + ')';
+        $link.html(html);
     };
     // end ajax link
 
@@ -79,47 +115,89 @@ var QuinenCake = QuinenCake || {};
         return true;
     };
 
-    this.onSuccessTabLink = function ($event, data, status, xhr) {
-        //console.debug('onSuccessTabLink', data.length, status);
-        var $link = $($event.currentTarget);
-        var id = $link.attr('id');
+    this.addTab = function (tab, content, options) {
+        options = Quinen.optionsDefault(options, {
+            id: Quinen.uuid(),
+            target: document,
+            parent: 0,
+            showOnClick: true
+        });
+
+        var target = $(options.target);
 
         // si tab n'existe pas deja
-        if ($("#t-" + id + "").length === 0) {
-            var $ul = $link.parents('.card').eq($link.data('parent')).find('ul.card-header-tabs:first');
+        if ($("#t-" + options.id + "").length === 0) {
+            var $ul = target.parents('.card').eq(options.parent).find('ul.card-header-tabs:first');
             var $divs = $('#c-' + $ul.attr('id') + '');
 
             // on genere les tab et content
-            var $li = $('<li class="nav-item" id="t-' + id + '">' +
-                '<a href="#" data-toggle="tab" data-target="#c-' + id + '" class="nav-link">' +
-                '<span>' + $link.data('oldHtml') + '</span>&nbsp;' +
-                '<button data-remove="' + id + '" type="button" class="close" aria-label="Fermer">' +
+            var $li = $('<li class="nav-item" id="t-' + options.id + '">' +
+                '<a href="#" data-toggle="tab" data-target="#c-' + options.id + '" class="nav-link">' +
+                '<span>' + tab /* + target.data('oldHtml') */ + '</span>&nbsp;' +
+                '<button data-remove="' + options.id + '" type="button" class="close" aria-label="Fermer">' +
                 '<span aria-hidden="1"><i class="fa fa-times fa-fw"></i></span>' +
                 '</button>' +
                 '</a></li>'
             );
 
-            var $div = $('<div class="tab-pane" id="c-' + id + '">' + data.content + '</div>');
+            var $div = $('<div class="tab-pane" id="c-' + options.id + '">' + content + '</div>');
 
             $ul.append($li);
             $divs.append($div);
 
             // titre
-            var tabTitle = '';
-            tabTitle = $('#c-' + id + '').find('.tab-link-title').html();
+            var tabTitle = $('#c-' + options.id + '').find('.tab-link-title').html();
             if (typeof tabTitle !== "undefined" && tabTitle.length > 0) {
-                $('#t-' + id + ' > a > span').html(tabTitle);
+                $('#t-' + options.id + ' > a > span').html(tabTitle);
             }
 
-            if ($link.data('showOnClick')) {
-                $("#t-" + id + " > a").tab('show');
+            if (options.showOnClick) {
+                $("#t-" + options.id + " > a").tab('show');
             }
         } else {
-            //console.debug('onSuccessTabLink', "#t-" + id + "");
+            //console.debug('onSuccessTabLink', "#t-" + options.id + "");
         }
 
-        QuinenCake.onSuccessAjaxLink($event, '', status, xhr);
+
     };
+
+    this.onSuccessTabLink = function (event, data, status, xhr) {
+        var $link = $(event.currentTarget);
+
+        QuinenCake.addTab(
+            $link.data('oldHtml'),
+            data.content,
+            {
+                id: $link.attr('id'),
+                target: event.currentTarget,
+                parent: $link.data('parent'),
+                showOnClick: $link.data('showOnClick')
+            }
+        );
+
+        QuinenCake.onSuccessAjaxLink(event, '', status, xhr);
+    };
+
+
+    this.onErrorTabLink = function (event, xhr, status, error) {
+        console.dir(arguments);
+        var $link = $(event.currentTarget);
+
+        QuinenCake.addTab(
+            xhr.status + ' (' + error + ')',
+            xhr.responseText,
+            {
+                id: $link.attr('id'),
+                target: event.currentTarget,
+                parent: $link.data('parent'),
+                showOnClick: $link.data('showOnClick')
+            }
+        );
+
+        QuinenCake.onErrorAjaxLink(event,xhr,status,error);
+    };
+
+
 
 
     this.listenOnCloseTabLink = function () {
@@ -431,20 +509,6 @@ var QuinenCake = QuinenCake || {};
         })
     };
 
-    this.copyToClipboard = function (b) {
-        var a = document.createElement("textarea");
-        a.value = b;
-        a.setAttribute("readonly", "");
-        a.style.position = "absolute";
-        a.style.left = "-9999px";
-        document.body.appendChild(a);
-        b = 0 < document.getSelection().rangeCount ? document.getSelection().getRangeAt(0) : !1;
-        a.select();
-        document.execCommand("copy");
-        document.body.removeChild(a);
-        b && (document.getSelection().removeAllRanges(), document.getSelection().addRange(b));
-    };
-
     this.initPopover = function () {
         $('[data-toggle="popover"]').popover();
 
@@ -514,12 +578,15 @@ var QuinenCake = QuinenCake || {};
             $.ajax({
                 url: event.target.dataset.href,
                 beforeSend: function (xhr, settings) {
+                    console.log(link,'beforeSend');
                     QuinenCake['onBeforeSend' + link + 'Link'].apply(QuinenCake, [event, xhr])
                 }
             }).done(function (data, status, xhr) {
+                console.log(link,'done');
                 QuinenCake['onSuccess' + link + 'Link'].apply(QuinenCake, [event, data, status, xhr])
             }).fail(function (xhr, status, error) {
-                QuinenCake['onErrorAjaxLink'].apply(QuinenCake, [event, xhr, status, error])
+                console.log(link,'fail');
+                QuinenCake['onError' + (link === 'Tab' ? link : 'Ajax') + 'Link'].apply(QuinenCake, [event, xhr, status, error])
             })
         });
     }
