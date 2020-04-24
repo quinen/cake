@@ -8,6 +8,7 @@ namespace QuinenCake\View\Helper;
 use Cake\Collection\Collection;
 use Cake\ORM\Query;
 use Cake\ORM\ResultSet;
+use Cake\Utility\Hash;
 use Cake\View\Helper\PaginatorHelper;
 use function PHPSTORM_META\type;
 
@@ -52,7 +53,7 @@ trait TableTrait
                 $firstData = $datas->cleanCopy()->first();
             }
             if ($firstData != null) {
-                if(is_array($firstData)){
+                if (is_array($firstData)) {
                     $this->setCurrentContext($options['context']);
                 } else {
                     $this->setCurrentContext($firstData->getSource());
@@ -176,6 +177,8 @@ trait TableTrait
     {
         $nbMaps = count($maps);
         $nbRows = count($rows);
+
+        $colIndexMap = [];
         // pour chaque mapping
         for ($colIndex = 0; $colIndex < $nbMaps; $colIndex++) {
             if ($maps[$colIndex]['rowspan']) {
@@ -185,9 +188,43 @@ trait TableTrait
                     do {
                         // ya t'il une valeur apres ?
                         $isNext = isset($rows[$rowIndex + $rowspan][0][$colIndex][0]);
+                        $isEqual = false;
                         if ($isNext) {
                             // cette valeur est elle egale ?
-                            $isEqual = $rows[$rowIndex + $rowspan][0][$colIndex] == $rows[$rowIndex][0][$colIndex];
+                            if ($maps[$colIndex]['rowspan'] === true) {
+                                $colIndexCalc = $colIndex;
+                                $isIsset = true;
+                            } else {
+                                // read cache
+                                if (isset($colIndexMap[$maps[$colIndex]['rowspan']])) {
+                                    $colIndexCalc = $colIndexMap[$maps[$colIndex]['rowspan']];
+                                } else {
+                                    // calc colIndex
+                                    //need to check field submitted by rowspan and fusion by it
+                                    $colIndexCalc = false;
+                                    foreach ($maps as $k => $v) {
+
+                                        if (Hash::get($v, 'field.0') === $maps[$colIndex]['rowspan']) {
+                                            $colIndexCalc = $k;
+                                            break;
+                                        }
+                                    }
+
+                                    // si le champ indiqué n'existe pas
+                                    if ($colIndexCalc === false) {
+                                        $colIndexCalc = $colIndex;
+                                    }
+                                    $colIndexMap[$maps[$colIndex]['rowspan']] = $colIndexCalc;
+                                }
+
+
+                                $isIsset = isset($rows[$rowIndex + $rowspan][0][$colIndexCalc]) &&
+                                    isset($rows[$rowIndex][0][$colIndexCalc]);
+                            }
+
+                            // == car comparaison d'objet === donne false
+                            $isEqual = !$isIsset || $rows[$rowIndex + $rowspan][0][$colIndexCalc] == $rows[$rowIndex][0][$colIndexCalc];
+
                             if ($isEqual) {
                                 $rowspan++;
                             }

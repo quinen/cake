@@ -103,6 +103,9 @@ trait Bs4NavTrait
         });
 
         if (!$hasActive) {
+            while ($list[$options['isActiveDefault']]['isDisabled']) {
+                $options['isActiveDefault']++;
+            }
             $list[$options['isActiveDefault']]['isActive'] = true;
         }
 
@@ -159,7 +162,7 @@ trait Bs4NavTrait
                     $linkOptions = $this->Html->addClass($linkOptions, 'btn-outline-' . $tabContent['color']);
                 }
 
-                if(isset($tabContent['data-name'])){
+                if (isset($tabContent['data-name'])) {
                     $linkOptions['data-name'] = $tabContent['data-name'];
                 }
 

@@ -9,6 +9,7 @@
 namespace QuinenCake\View\Helper;
 
 use Cake\Core\Exception\Exception;
+use Cake\I18n\Date;
 use Cake\ORM\Entity;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Inflector;
@@ -119,7 +120,7 @@ trait BootstrapTrait
 
     public function formatDate($value)
     {
-        return $value;
+        return new Date($value);
     }
 
     /**
@@ -165,7 +166,7 @@ trait BootstrapTrait
 
     private function getFormatInputUrl($context)
     {
-        if($context instanceof Entity){
+        if ($context instanceof Entity) {
             $tableName = $context->getSource();
         } else {
             throw new Exception('need an entity to generate url');
