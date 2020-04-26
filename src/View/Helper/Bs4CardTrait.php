@@ -84,7 +84,7 @@ trait Bs4CardTrait
 
 
         if ($options['color']) {
-            $colorClasses = 'alert-' . $options['color'];
+            $colorClasses = 'bg-' . $options['color'];
             $options = $this->addClass($options, $colorClasses);
         }
         unset($options['color']);

@@ -15,7 +15,7 @@ trait Bs4NavbarTrait
             // light, dark
             'theme' => "light",
             'bg' => "light",
-            'classRight' => 'ml-auto'
+            'classRight' => 'ml-auto align-items-center'
         ];
 
         $options += $optionsDefault;

@@ -35,13 +35,134 @@ var QuinenCake = QuinenCake || {};
         );
     }
 
+    // "toto"   => ["toto",{}]
+    // ["titi"] => ["titi",{}]
+    // ["tata",{a:"b"}] => ["tata",{a:"b"}]
+    // [["tutu","tete"]] => // [["tutu","tete"],{}]
+
+    this.contentOptions = function (content, contentDefault) {
+        let contentOptions = {};
+        //if (typeof content === 'string') {} else
+        if (Array.isArray(content)) {
+            if (typeof content[1] !== undefined) {
+                contentOptions = content[1];
+            }
+            content = content[0];
+        }
+        if (typeof content === 'undefined') {
+            content = contentDefault
+        }
+        return [content, contentOptions];
+    }
+    ;
+
+    this.renderTable = function(data, maps, options) {
+        var data = data || [];
+        var maps = maps || [];
+        var options = options || {};
+
+        Quinen.optionsDefault(options, {
+            showHead: true
+        });
+
+        let table = document.createElement('table');
+
+        var initMaps = function(maps, data) {
+            if (maps.length === 0) {
+                maps = Object.keys(data[0]);
+            }
+            return maps.map(function(map) {
+                if (typeof map === 'string') {
+                    map = {
+                        label: map,
+                        field: map,
+                    }
+                } else if (typeof map === 'object') {// already ok
+                } else {
+                    throw 'invalid map : (' + (typeof map) + ')' + map;
+                }
+
+                map.field = Quinen.contentOptions(map.field);
+                map.label = Quinen.contentOptions(map.label, map.field[0]);
+
+                return map;
+            });
+        }
+
+        //table.classList.add('table');
+        let thead = function(table, maps) {
+            let thead = table.createTHead();
+            let row = thead.insertRow();
+
+            for (let map of maps) {
+                if (typeof map.isNewLine !== 'undefined' && map.isNewLine === true) {
+                    row = thead.insertRow();
+                }
+                let th = document.createElement("th");
+                let text = document.createTextNode(map.label[0]);
+                // label options
+                for (let label in map.label[1]) {
+                    th.setAttribute(label, map.label[1][label]);
+                }
+                th.appendChild(text);
+                row.appendChild(th);
+            }
+        };
+
+        let tbody = function(table, data, maps) {
+            for (let line of data) {
+                let row = table.insertRow();
+                for (let map of maps) {
+                    if (typeof map.isNewLine !== 'undefined' && map.isNewLine === true) {
+                        row = table.insertRow();
+                    }
+                    let cell = row.insertCell();
+                    //let text = document.createTextNode(line[key]);
+                    //cell.appendChild(text);
+                    let isArray = false;
+                    if (Array.isArray(map.field[0])) {
+                        isArray = true
+                        var value = (map.field[0]).map(function(field) {
+                            return line[field];
+                        });
+                    } else {
+                        var value = line[map.field[0]];
+                    }
+
+                    if (typeof map.format !== 'undefined') {
+                        value = map.format.apply(null, (isArray ? value : [value]));
+                    }
+                    cell.innerHTML = value;
+                    // cell options
+                    for (let field in map.field[1]) {
+                        cell.setAttribute(field, map.field[1][field]);
+                    }
+                }
+            }
+        };
+
+        maps = initMaps(maps, data);
+        tbody(table, data, maps);
+        if (options['showHead']) {
+            thead(table, maps);
+        }
+        delete options['showHead'];
+
+        // set options on table
+        for (let key in options) {
+            table.setAttribute(key, options[key]);
+        }
+        return table;
+    }
+    ;
+
 }).apply(Quinen);
 
 (function () {
     'use strict';
 
     this.onLoad = function () {
-        console.debug('QuinenCake.onLoad');
+        //console.debug('QuinenCake.onLoad');
         this.listenOnCloseTabLink();
 
         //this.redirectPaginatorLink();

@@ -103,7 +103,7 @@ trait Bs4NavTrait
         });
 
         if (!$hasActive) {
-            while ($list[$options['isActiveDefault']]['isDisabled']) {
+            while (isset($list[$options['isActiveDefault']]['isDisabled']) && $list[$options['isActiveDefault']]['isDisabled']) {
                 $options['isActiveDefault']++;
             }
             $list[$options['isActiveDefault']]['isActive'] = true;
