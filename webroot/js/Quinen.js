@@ -1,6 +1,9 @@
+/**
+ *  Quinen : lib without any dependency
+ *  Quinen.Cake : has multiple dependency : jquery, bootstrap, moment, select2
+ *  Quinen.Html : lib to generate html elements, no dependency
+ */
 var Quinen = Quinen || {};
-var QuinenCake = QuinenCake || {};
-
 (function () {
     'use strict';
 
@@ -33,7 +36,7 @@ var QuinenCake = QuinenCake || {};
         return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
             (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
         );
-    }
+    };
 
     // "toto"   => ["toto",{}]
     // ["titi"] => ["titi",{}]
@@ -44,7 +47,7 @@ var QuinenCake = QuinenCake || {};
         let contentOptions = {};
         //if (typeof content === 'string') {} else
         if (Array.isArray(content)) {
-            if (typeof content[1] !== undefined) {
+            if (typeof content[1] !== 'undefined') {
                 contentOptions = content[1];
             }
             content = content[0];
@@ -56,115 +59,134 @@ var QuinenCake = QuinenCake || {};
     }
     ;
 
-    this.renderTable = function(data, maps, options) {
-        var data = data || [];
-        var maps = maps || [];
-        var options = options || {};
-
-        Quinen.optionsDefault(options, {
-            showHead: true
+    this.template = (template, obj) => {
+        return template.replace(new RegExp('\{\{([^}]+)\}\}', 'gi'), function () {
+            if (typeof obj[arguments[1]] !== 'undefined') {
+                return obj[arguments[1]];
+            }
+            return '';
         });
-
-        let table = document.createElement('table');
-
-        var initMaps = function(maps, data) {
-            if (maps.length === 0) {
-                maps = Object.keys(data[0]);
-            }
-            return maps.map(function(map) {
-                if (typeof map === 'string') {
-                    map = {
-                        label: map,
-                        field: map,
-                    }
-                } else if (typeof map === 'object') {// already ok
-                } else {
-                    throw 'invalid map : (' + (typeof map) + ')' + map;
-                }
-
-                map.field = Quinen.contentOptions(map.field);
-                map.label = Quinen.contentOptions(map.label, map.field[0]);
-
-                return map;
-            });
-        }
-
-        //table.classList.add('table');
-        let thead = function(table, maps) {
-            let thead = table.createTHead();
-            let row = thead.insertRow();
-
-            for (let map of maps) {
-                if (typeof map.isNewLine !== 'undefined' && map.isNewLine === true) {
-                    row = thead.insertRow();
-                }
-                let th = document.createElement("th");
-                let text = document.createTextNode(map.label[0]);
-                // label options
-                for (let label in map.label[1]) {
-                    th.setAttribute(label, map.label[1][label]);
-                }
-                th.appendChild(text);
-                row.appendChild(th);
-            }
-        };
-
-        let tbody = function(table, data, maps) {
-            for (let line of data) {
-                let row = table.insertRow();
-                for (let map of maps) {
-                    if (typeof map.isNewLine !== 'undefined' && map.isNewLine === true) {
-                        row = table.insertRow();
-                    }
-                    let cell = row.insertCell();
-                    //let text = document.createTextNode(line[key]);
-                    //cell.appendChild(text);
-                    let isArray = false;
-                    if (Array.isArray(map.field[0])) {
-                        isArray = true
-                        var value = (map.field[0]).map(function(field) {
-                            return line[field];
-                        });
-                    } else {
-                        var value = line[map.field[0]];
-                    }
-
-                    if (typeof map.format !== 'undefined') {
-                        value = map.format.apply(null, (isArray ? value : [value]));
-                    }
-                    cell.innerHTML = value;
-                    // cell options
-                    for (let field in map.field[1]) {
-                        cell.setAttribute(field, map.field[1][field]);
-                    }
-                }
-            }
-        };
-
-        maps = initMaps(maps, data);
-        tbody(table, data, maps);
-        if (options['showHead']) {
-            thead(table, maps);
-        }
-        delete options['showHead'];
-
-        // set options on table
-        for (let key in options) {
-            table.setAttribute(key, options[key]);
-        }
-        return table;
-    }
-    ;
-
+    };
 }).apply(Quinen);
 
+Quinen.Bs4 = Quinen.Bs4 || {};
+(function () {
+        'use strict';
+
+        this.button = (button, options) => {
+            let buttonDefault = 'light'
+            let buttonColors = ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark', 'link'];
+            if (typeof this.buttonModels === 'undefined') {
+                this.buttonModels = {};
+                // generate from colors & outline
+                [true, false].map((isOutline) => {
+                        buttonColors.map((color) => {
+                                let modelName = (isOutline ? 'outline-' : '') + color;
+                                if (typeof this.buttonModels[modelName] === 'undefined') {
+                                    this.buttonModels[modelName] = {
+                                        color,
+                                        isOutline
+                                    };
+                                }
+                            }
+                        );
+                    }
+                );
+            }
+
+            let buttonModels = {
+                ...this.buttonModels,
+                ...{
+                    light: {
+                        color: 'light',
+                        isOutline: false
+                    }
+                }
+            };
+
+            button = button || buttonDefault;
+            options = options || {};
+
+            // model,contenu text direct
+            if (typeof options === 'string') {
+                options = {
+                    text: options
+                };
+            }
+            // options
+            if (typeof button === 'object') {
+                options = button;
+            } else {
+                options['button'] = button;
+            }
+            // button devient inutile ici
+
+            // options OK
+
+            // gestion des models
+            while (typeof options['button'] !== 'undefined') {
+                button = options['button'];
+                delete options['button'];
+                if (typeof buttonModels[button] !== 'undefined') {
+                    options = Quinen.optionsDefault(options, buttonModels[button])
+                } else {
+                    options = Quinen.optionsDefault(options, buttonModels[buttonDefault])
+                }
+            }
+
+            // create
+            let btn = document.createElement('button');
+            btn.classList.add('btn')
+
+            // gestion des couleurs
+            if (typeof options['color'] !== 'undefined') {
+                if (buttonColors.indexOf(options['color']) !== -1) {
+                    if (options['isOutline']) {
+                        btn.classList.add('btn-outline-' + options['color']);
+                    } else {
+                        btn.classList.add('btn-' + options['color']);
+                    }
+                }
+            }
+            delete options['isOutline'];
+            delete options['color'];
+
+            // gestion du texte et icon
+            btn.innerHTML = Quinen.Html.iconText(options).outerHTML;
+
+            if(typeof options['isDisabled'] !== 'undefined' && options['isDisabled']){
+              options['disabled'] = 'disabled';
+            }
+            delete options['isDisabled'];
+
+            Quinen.Html.setAttributes(btn, options);
+            delete options['disabled'];
+
+            return btn;
+        };
+
+        this.buttons = (buttons, options) => {
+            let btns = document.createElement('div');
+            btns.classList.add('btn-group');
+
+            buttons.map((button) => {
+                btns.appendChild(this.button.apply(null, button));
+            });
+
+            Quinen.Html.setAttributes(btns, options);
+            return btns;
+        };
+
+    }
+).apply(Quinen.Bs4);
+
+
+Quinen.Cake = Quinen.Cake || {};
 (function () {
     'use strict';
 
     this.onLoad = function () {
-        //console.debug('QuinenCake.onLoad');
         this.listenOnCloseTabLink();
-
         //this.redirectPaginatorLink();
         this.updateFromInputValue();
         this.listenOnClearForm();
@@ -188,7 +210,6 @@ var QuinenCake = QuinenCake || {};
     };
 
     this.onSuccessAjaxLink = function ($event, data, status, xhr) {
-        //console.debug('onSuccessAjaxLink', data.length, status);
         // we restore the old html upon returning
         var $link = $($event.currentTarget);
         if (data.length > 0) {
@@ -210,11 +231,9 @@ var QuinenCake = QuinenCake || {};
 
     // tab link
     this.onBeforeSendTabLink = function ($event, xhr) {
-        //console.log('onBeforeSendTabLink',event,xhr);
 
         var $link = $($event.currentTarget);
         var id = $link.attr('id');
-
 
         // if tab already exist
         if ($("#t-" + id + "").length > 0) {
@@ -231,7 +250,7 @@ var QuinenCake = QuinenCake || {};
             return $link.data('refreshOnClick');
             */
         }
-        QuinenCake.onBeforeSendAjaxLink($event, xhr);
+        Quinen.Cake.onBeforeSendAjaxLink($event, xhr);
         return true;
     };
 
@@ -275,7 +294,6 @@ var QuinenCake = QuinenCake || {};
                 $("#t-" + options.id + " > a").tab('show');
             }
         } else {
-            //console.debug('onSuccessTabLink', "#t-" + options.id + "");
         }
 
 
@@ -284,7 +302,7 @@ var QuinenCake = QuinenCake || {};
     this.onSuccessTabLink = function (event, data, status, xhr) {
         var $link = $(event.currentTarget);
 
-        QuinenCake.addTab(
+        Quinen.Cake.addTab(
             $link.data('oldHtml'),
             data.content,
             {
@@ -295,8 +313,8 @@ var QuinenCake = QuinenCake || {};
             }
         );
 
-        QuinenCake.onSuccessAjaxLink(event, '', status, xhr);
-        QuinenCake.initSelect2();
+        Quinen.Cake.onSuccessAjaxLink(event, '', status, xhr);
+        Quinen.Cake.initSelect2();
     };
 
 
@@ -304,7 +322,7 @@ var QuinenCake = QuinenCake || {};
         console.dir(arguments);
         var $link = $(event.currentTarget);
 
-        QuinenCake.addTab(
+        Quinen.Cake.addTab(
             xhr.status + ' (' + error + ')',
             xhr.responseText,
             {
@@ -315,7 +333,7 @@ var QuinenCake = QuinenCake || {};
             }
         );
 
-        QuinenCake.onErrorAjaxLink(event, xhr, status, error);
+        Quinen.Cake.onErrorAjaxLink(event, xhr, status, error);
     };
 
 
@@ -349,17 +367,16 @@ var QuinenCake = QuinenCake || {};
 
             if (typeof $link.data('newTrHtml') !== 'undefined') {
                 $link.data('oldHtml', $link.data('oldTrHtml'));
-                QuinenCake.onSuccessAjaxLink($event, '', null, xhr);
+                Quinen.Cake.onSuccessAjaxLink($event, '', null, xhr);
             }
             return false;
         } else {
             // on va afficher le contenu
-            QuinenCake.onBeforeSendAjaxLink($event, xhr);
+            Quinen.Cake.onBeforeSendAjaxLink($event, xhr);
         }
     };
 
     this.onSuccessTrLink = function ($event, data, status, xhr) {
-        //console.debug('onSuccessTrLink', data.length);
         var $link = $($event.currentTarget);
         var $tr = $link.closest('tr');
         var nbChild = $tr.children().length;
@@ -375,16 +392,15 @@ var QuinenCake = QuinenCake || {};
             $link.data('oldHtml', $link.data('newTrHtml'));
         }
 
-        QuinenCake.onSuccessAjaxLink($event, '', status, xhr);
+        Quinen.Cake.onSuccessAjaxLink($event, '', status, xhr);
         return true;
     };
     // end tr link
 
     this.onBeforeSendModalLink = function ($event, xhr) {
-        //console.log('onBeforeSendModalLink');
         var $link = $($event.currentTarget);
 
-        QuinenCake.onBeforeSendAjaxLink($event, xhr);
+        Quinen.Cake.onBeforeSendAjaxLink($event, xhr);
 
         if ($link.data('size')) {
             $('#linkModal').find('.modal-dialog').addClass('modal-' + $link.data('size'));
@@ -392,8 +408,7 @@ var QuinenCake = QuinenCake || {};
     };
 
     this.onSuccessModalLink = function ($event, data, status, xhr) {
-        //console.log('onSuccessModalLink', data.length);
-        QuinenCake.onSuccessAjaxLink($event, '', status, xhr);
+        Quinen.Cake.onSuccessAjaxLink($event, '', status, xhr);
         $('#linkModal').find('.modal-body').html(data);
         $('#linkModal').modal({
             //backdrop: 'static'
@@ -459,9 +474,9 @@ var QuinenCake = QuinenCake || {};
 
             //allowClear: true // bootstrap 4 conflict
         }).on('select2:opening', function () {
-            QuinenCake.showLoading = false;
+            Quinen.Cake.showLoading = false;
         }).on('select2:close', function () {
-            QuinenCake.showLoading = true;
+            Quinen.Cake.showLoading = true;
         }).maximizeSelect2Height();
     };
 
@@ -562,7 +577,7 @@ var QuinenCake = QuinenCake || {};
     this.initDatepicker = function () {
 
         var locale = 'fr';
-        var placeholder = QuinenCake.getDatePlaceholder(locale);
+        var placeholder = Quinen.Cake.getDatePlaceholder(locale);
 
         $('[data-toggle="datetimepicker"]').each(function () {
             var $source = $(this);
@@ -592,7 +607,7 @@ var QuinenCake = QuinenCake || {};
             });
 
             $target.change(function (event) {
-                //console.log(event);
+
             });
         });
 
@@ -600,7 +615,7 @@ var QuinenCake = QuinenCake || {};
     }
 
     this.startLoading = function () {
-        if (QuinenCake.showLoading) {
+        if (Quinen.Cake.showLoading) {
             $('#loadingModal').modal({
                 backdrop: 'static'
             });
@@ -672,11 +687,11 @@ var QuinenCake = QuinenCake || {};
                 url: form.attr('action'),
                 data: form.serialize()
             }).done(function (response, textStatus, xhr) {
-                form.parents('.container-fluid:first').prepend(QuinenCake.renderFlash(response._message));
+                form.parents('.container-fluid:first').prepend(Quinen.Cake.renderFlash(response._message));
                 var paneId = form.parents('.tab-pane:first').attr('id');
                 $('a[data-target="#' + paneId + '"] .close').click();
             }).fail(function (response) {
-                form.parents('.container-fluid:first').prepend(QuinenCake.renderFlash(response._message));
+                form.parents('.container-fluid:first').prepend(Quinen.Cake.renderFlash(response._message));
                 // Optionally alert the user of an error here...
                 console.dir(arguments);
                 form.prepend(response.content);
@@ -697,24 +712,225 @@ var QuinenCake = QuinenCake || {};
             $.ajax({
                 url: event.target.dataset.href,
                 beforeSend: function (xhr, settings) {
-                    console.log(link, 'beforeSend');
-                    QuinenCake['onBeforeSend' + link + 'Link'].apply(QuinenCake, [event, xhr])
+                    Quinen.Cake['onBeforeSend' + link + 'Link'].apply(Quinen.Cake, [event, xhr])
                 }
             }).done(function (data, status, xhr) {
-                console.log(link, 'done');
-                QuinenCake['onSuccess' + link + 'Link'].apply(QuinenCake, [event, data, status, xhr])
+                Quinen.Cake['onSuccess' + link + 'Link'].apply(Quinen.Cake, [event, data, status, xhr])
             }).fail(function (xhr, status, error) {
                 console.log(link, 'fail');
-                QuinenCake['onError' + (link === 'Tab' ? link : 'Ajax') + 'Link'].apply(QuinenCake, [event, xhr, status, error])
+                Quinen.Cake['onError' + (link === 'Tab' ? link : 'Ajax') + 'Link'].apply(Quinen.Cake, [event, xhr, status, error])
             })
         });
     }
 
-}).apply(QuinenCake);
+}).apply(Quinen.Cake);
 
+Quinen.Html = Quinen.Html || {};
+(function () {
+    'use strict';
+    this.table = function (data, maps, options) {
+        data = data || [];
+        maps = maps || [];
+        options = options || {};
+
+        Quinen.optionsDefault(options, {
+            showHead: true
+        });
+
+        let table = document.createElement('table');
+
+        var initMaps = function (maps, data) {
+            if (maps.length === 0) {
+                maps = Object.keys(data[0]);
+            }
+            return maps.map(function (map) {
+                if (typeof map === 'string') {
+                    map = {
+                        label: map,
+                        field: map,
+                    }
+                } else if (typeof map === 'object') {// already ok
+                } else {
+                    throw 'invalid map : (' + (typeof map) + ')' + map;
+                }
+
+                map.field = Quinen.contentOptions(map.field);
+                map.label = Quinen.contentOptions(map.label, map.field[0]);
+
+                return map;
+            });
+        }
+
+        //table.classList.add('table');
+        let thead = (table, maps) => {
+            let thead = table.createTHead();
+            let row = thead.insertRow();
+
+            for (let map of maps) {
+                if (typeof map.isNewLine !== 'undefined' && map.isNewLine === true) {
+                    row = thead.insertRow();
+                }
+                let th = document.createElement("th");
+                let text = document.createTextNode(map.label[0]);
+                // label options
+                this.setAttributes(th, map.label[1]);
+                th.appendChild(text);
+                row.appendChild(th);
+            }
+        };
+
+        let tbody = (table, data, maps) => {
+            for (let line of data) {
+                let tr = table.insertRow();
+                for (let map of maps) {
+                    if (typeof map.isNewLine !== 'undefined' && map.isNewLine === true) {
+                        tr = table.insertRow();
+                    }
+                    let td = tr.insertCell();
+                    //let text = document.createTextNode(line[key]);
+                    //td.appendChild(text);
+
+                    // get scalar value
+                    let wasArray = false;
+                    let value = [line[map.field[0]]];
+                    if (Array.isArray(map.field[0])) {
+                        wasArray = true;
+                        //array value
+                        value = (map.field[0]).map(function (field) {
+                            return line[field];
+                        });
+                    }
+
+                    if (typeof map.format !== 'undefined') {
+                        value = map.format.apply(null, value);
+                    }
+
+                    let valueOptions = {};
+                    [value,valueOptions] = Quinen.contentOptions((wasArray ? value : value[0]));
+                    Quinen.optionsDefault(valueOptions,map.field[1]);
+
+                    td.innerHTML = value;
+                    // td options
+                    this.setAttributes(td, valueOptions);
+                }
+            }
+        };
+
+        maps = initMaps(maps, data);
+        tbody(table, data, maps);
+        if (options['showHead']) {
+            thead(table, maps);
+        }
+        delete options['showHead'];
+
+        // set options on table
+        this.setAttributes(table, options);
+        return table;
+    };
+
+    this.setAttributes = function (obj, options) {
+        for (let option in options) {
+            if (options.hasOwnProperty(option)) {
+                obj.setAttribute(option, options[option]);
+            }
+        }
+    };
+
+    this.tag = function (tagName, content, options) {
+        tagName = tagName || 'div';
+        content = content || null;
+        options = options || {};
+
+        let tag = document.createElement(tagName);
+        tag.innerHTML = content;
+        this.setAttributes(tag, options);
+        return tag;
+    };
+
+    this.icon = (iconName, options) => {
+        let iconTypes = {
+            brand: 'fab',
+            light: 'fal'
+        };
+        let iconBrands = ['maxcdn'];
+
+        iconName = iconName || 'question';
+        options = options || {};
+
+        if (typeof iconName === 'object') {
+            options = iconName;
+            iconName = '';
+        }
+
+        Quinen.optionsDefault(options, {
+            icon: iconName,
+            type: 'light'
+        });
+
+        let icon = document.createElement('i');
+        // is brand ?
+        if (iconBrands.indexOf(options['icon']) !== -1) {
+            options['type'] = 'brand';
+        }
+        // type
+        if (typeof iconTypes[options['type']] !== 'undefined') {
+            icon.classList.add(iconTypes[options['type']]);
+        }
+        delete options['type'];
+
+        icon.classList.add('fa-' + options['icon']);
+        delete options['icon'];
+
+        return icon;
+    }
+    ;
+
+    this.iconText = (iconName,text,options)=>{
+        text = text || '';
+        options = options || {};
+
+        if (typeof iconName === 'object') {
+            options = iconName,
+                iconName = false
+        }
+
+        Quinen.optionsDefault(options, {
+            icon: iconName,
+            showIcon: true,
+            text: text,
+            showText: true,
+            template: '{{icon}} {{text}}'
+        });
+
+        if (options['showIcon'] && options['icon']) {
+            // transform iconName in icon
+            options['icon'] = this.icon.apply(null, Quinen.contentOptions(options['icon'])).outerHTML;
+        } else {
+            delete options['icon'];
+        }
+
+        if (!options['showText']) {
+            delete options['text'];
+        }
+
+        let span = document.createElement('span');
+
+        span.innerHTML = Quinen.template(options['template'], options);
+
+        delete options['showIcon'];
+        delete options['icon'];
+        delete options['showText'];
+        delete options['text'];
+        delete options['template'];
+
+        return span;
+    }
+
+
+}).apply(Quinen.Html);
 
 $(function () {
-    QuinenCake.onLoad();
+    Quinen.Cake.onLoad();
 });
 
 moment.updateLocale('fr', {

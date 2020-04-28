@@ -18,7 +18,6 @@ trait LinkTrait
         'trLink' => false,
     ];
 
-    private $linkFunctionPlugin = 'QuinenCake';
     private $linkContent = [];
 
     public function storeContentLink($content, $link)
