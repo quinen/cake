@@ -22,6 +22,7 @@ trait Bs4CardTrait
 
         $options += [
             'header' => false,
+            'headerOptions' => [],
             'title' => false,
             'buttons' => [],
             'body' => false,
@@ -58,7 +59,9 @@ trait Bs4CardTrait
 
         $header = null;
         if ($options['header']) {
-            $header = $this->Html->div('card-header pr-2-5', $options['header']);
+            $options['headerOptions'] = $this->addClass($options['headerOptions'],'card-header pr-2-5');
+            $header = $this->Html->tag('div',$options['header'],$options['headerOptions']);
+            //$header = $this->Html->div('card-header pr-2-5', $options['header']);
             //$header = $this->Html->div('card-header', $options['header']);
         }
         unset($options['header']);

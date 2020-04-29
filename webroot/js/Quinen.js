@@ -154,8 +154,8 @@ Quinen.Bs4 = Quinen.Bs4 || {};
             // gestion du texte et icon
             btn.innerHTML = Quinen.Html.iconText(options).outerHTML;
 
-            if(typeof options['isDisabled'] !== 'undefined' && options['isDisabled']){
-              options['disabled'] = 'disabled';
+            if (typeof options['isDisabled'] !== 'undefined' && options['isDisabled']) {
+                options['disabled'] = 'disabled';
             }
             delete options['isDisabled'];
 
@@ -300,11 +300,13 @@ Quinen.Cake = Quinen.Cake || {};
     };
 
     this.onSuccessTabLink = function (event, data, status, xhr) {
-        var $link = $(event.currentTarget);
+        let $link = $(event.currentTarget);
+
+        let content = (typeof data.content !== 'undefined' ? data.content: data);
 
         Quinen.Cake.addTab(
             $link.data('oldHtml'),
-            data.content,
+            content,
             {
                 id: $link.attr('id'),
                 target: event.currentTarget,
@@ -314,7 +316,6 @@ Quinen.Cake = Quinen.Cake || {};
         );
 
         Quinen.Cake.onSuccessAjaxLink(event, '', status, xhr);
-        Quinen.Cake.initSelect2();
     };
 
 
@@ -408,11 +409,12 @@ Quinen.Cake = Quinen.Cake || {};
     };
 
     this.onSuccessModalLink = function ($event, data, status, xhr) {
-        Quinen.Cake.onSuccessAjaxLink($event, '', status, xhr);
+
         $('#linkModal').find('.modal-body').html(data);
         $('#linkModal').modal({
             //backdrop: 'static'
         });
+        Quinen.Cake.onSuccessAjaxLink($event, '', status, xhr);
         return true;
     };
 
@@ -806,8 +808,8 @@ Quinen.Html = Quinen.Html || {};
                     }
 
                     let valueOptions = {};
-                    [value,valueOptions] = Quinen.contentOptions((wasArray ? value : value[0]));
-                    Quinen.optionsDefault(valueOptions,map.field[1]);
+                    [value, valueOptions] = Quinen.contentOptions((wasArray ? value : value[0]));
+                    Quinen.optionsDefault(valueOptions, map.field[1]);
 
                     td.innerHTML = value;
                     // td options
@@ -885,7 +887,7 @@ Quinen.Html = Quinen.Html || {};
     }
     ;
 
-    this.iconText = (iconName,text,options)=>{
+    this.iconText = (iconName, text, options) => {
         text = text || '';
         options = options || {};
 
@@ -929,8 +931,9 @@ Quinen.Html = Quinen.Html || {};
 
 }).apply(Quinen.Html);
 
-$(function () {
-    Quinen.Cake.onLoad();
+$(function(){Quinen.Cake.onLoad();});
+$(document).ajaxStop(function(){
+    Quinen.Cake.initSelect2();
 });
 
 moment.updateLocale('fr', {
