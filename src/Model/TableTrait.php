@@ -71,8 +71,10 @@ trait TableTrait
      */
     public function findList(Query $query, array $options = [])
     {
-        return parent::findList($query, $options)
-            ->order([$this->aliasField($this->getDisplayField()) => 'ASC']);
+        $options += [
+            'order' => [$this->aliasField($this->getDisplayField()) => 'ASC']
+        ];
+        return parent::findList($query, $options)->order($options['order']);
     }
 
     public function findSortDirection(Query $query, array $options = [], array $defaults = [])

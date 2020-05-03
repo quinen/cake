@@ -226,9 +226,15 @@ trait Bootstrap4Trait
         $options['colBase'] = 12 / ($options['nbCols'] * 2);
         $options['colBaseClass'] = 'col-' . strtr($options['colBase'], ['.' => '-']);
 
+        $indexHide = 0;
         // gestion colspan
-        $array = collection($maps)->reduce(function ($reducer, $map, $index) use ($line, $options) {
-
+        $array = collection($maps)->reduce(function ($reducer, $map, $index) use ($line, $options, &$indexHide) {
+            if (isset($map['hide']) && $map['hide']) {
+                $indexHide++;
+                return $reducer;
+            } else {
+                $index -= $indexHide;
+            }
             $options = $this->Html->addClass($options, $options['colBaseClass'], 'labelClass');
 
             if (isset($map['colspan']) && $map['colspan']) {
@@ -244,7 +250,7 @@ trait Bootstrap4Trait
             $line[$index][1] = $this->addClass($line[$index][1], $options['fieldClass']);
 
             $dt = $this->Html->tag($options['tags'][0], $map['label'][0], $map['label'][1]);
-            $dd = $this->Html->tag($options['tags'][1], $line[$index][0] . '&nbsp;', $line[$index][1]);
+            $dd = $this->Html->tag($options['tags'][1], $line[$index][0] . (mb_strlen($line[$index][0]) === 0 ? '&nbsp;' : ''), $line[$index][1]);
 
             $reducer['html'][] = $dt . $dd;
             $reducer['count'] += $map['colspan'];
@@ -318,7 +324,7 @@ trait Bootstrap4Trait
 
             if ($barOptions['width']) {
                 $pct = round($barOptions['width'], 1) . '%';
-                $barOptions = $this->addClass($barOptions, 'width:' . $pct.';', 'style');
+                $barOptions = $this->addClass($barOptions, 'width:' . $pct . ';', 'style');
 
             }
             unset($barOptions['width']);

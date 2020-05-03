@@ -84,11 +84,21 @@ trait Bs4NavbarTrait
             list($element, $elementOptions) = $this->Html->getIconText($elementOptions + ['text' => $element]);
             // linkify
             if ($this->Html->isLinkExistInOptions($elementOptions)) {
+                if (isset($elementOptions['id'])) {
+                    $id = $elementOptions['id'];
+                    unset($elementOptions['id']);
+                }
+                // id should be unique
                 list($element, $elementOptions) = $this->Html->linkify(
                     $element,
                     $elementOptions,
                     ['class' => "nav-link"]
                 );
+
+                if (isset($id)) {
+                    $elementOptions += compact('id');
+                }
+
             } else {
                 if (isset($elementOptions['list'])) {
 
@@ -100,7 +110,7 @@ trait Bs4NavbarTrait
                         [
                             // option for navbar only
                             'align' => false
-                        ] + $elementOptions + [
+                        ] + array_diff_key($elementOptions, array_flip(['id', 'style'])) + [
                             'text' => $element,
                             'color' => $options['bg']
                         ]
@@ -114,6 +124,7 @@ trait Bs4NavbarTrait
 
                 } else if (isset($elementOptions['raw'])) {
                     $element = $elementOptions['raw'];
+                    unset($elementOptions['raw']);
                 } else {
                     $elementOptions = $this->addClass($elementOptions, 'navbar-text');
                     $element = $this->Html->tag('div', $element, $elementOptions);

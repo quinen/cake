@@ -302,7 +302,7 @@ Quinen.Cake = Quinen.Cake || {};
     this.onSuccessTabLink = function (event, data, status, xhr) {
         let $link = $(event.currentTarget);
 
-        let content = (typeof data.content !== 'undefined' ? data.content: data);
+        let content = (typeof data.content !== 'undefined' ? data.content : data);
 
         Quinen.Cake.addTab(
             $link.data('oldHtml'),
@@ -795,16 +795,20 @@ Quinen.Html = Quinen.Html || {};
                     // get scalar value
                     let wasArray = false;
                     let value = [line[map.field[0]]];
+                    // array value
                     if (Array.isArray(map.field[0])) {
                         wasArray = true;
-                        //array value
                         value = (map.field[0]).map(function (field) {
                             return line[field];
                         });
                     }
 
+                    // format
                     if (typeof map.format !== 'undefined') {
                         value = map.format.apply(null, value);
+                        if (!wasArray && !Array.isArray(value)) {
+                            value = [value];
+                        }
                     }
 
                     let valueOptions = {};
@@ -931,8 +935,10 @@ Quinen.Html = Quinen.Html || {};
 
 }).apply(Quinen.Html);
 
-$(function(){Quinen.Cake.onLoad();});
-$(document).ajaxStop(function(){
+$(function () {
+    Quinen.Cake.onLoad();
+});
+$(document).ajaxStop(function () {
     Quinen.Cake.initSelect2();
 });
 
