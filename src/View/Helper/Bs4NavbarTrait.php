@@ -57,7 +57,9 @@ trait Bs4NavbarTrait
             return $reducer;
         }, []);
 
-        $navbar[] = $this->Html->list($navbarLeftRight['left'], ['class' => "navbar-nav"]);
+        if (isset($navbarLeftRight['left'])) {
+            $navbar[] = $this->Html->list($navbarLeftRight['left'], ['class' => "navbar-nav"]);
+        }
         if (isset($navbarLeftRight['center'])) {
             $navbar[] = implode('', Hash::extract($navbarLeftRight['center'], '{n}.0'));
         }

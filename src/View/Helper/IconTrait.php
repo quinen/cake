@@ -67,6 +67,11 @@ trait IconTrait
         }
 
         if ($options['isTitle'] && $options['text']) {
+            // menu auth a vide durant test^M
+            if (is_array($text)) {
+                $text = $text[0];
+            }
+
             $options += ['title' => strip_tags($text)];
         }
 
