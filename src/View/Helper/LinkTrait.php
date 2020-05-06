@@ -2,6 +2,7 @@
 
 namespace QuinenCake\View\Helper;
 
+use Cake\Routing\Exception\MissingRouteException;
 use Cake\Utility\Inflector;
 use Cake\Utility\Text;
 use Cake\View\Exception\MissingHelperException;
@@ -146,13 +147,18 @@ trait LinkTrait
                     if (is_array($this->linkContent)) {
                         unset($this->linkContent['_access']);
                     }
+                    try {
+                        $content = \call_user_func(
+                            $linkCallback[$key],
+                            $content,
+                            $this->linkContent,
+                            $linkOptions
+                        );
+                    } catch (MissingRouteException $e) {
+                        //debug($content);
+                        $content = null;
+                    }
 
-                    $content = \call_user_func(
-                        $linkCallback[$key],
-                        $content,
-                        $this->linkContent,
-                        $linkOptions
-                    );
                 } else {
                     $content = null;
                 }
@@ -181,11 +187,13 @@ trait LinkTrait
 
     private function linkCheckAccess()
     {
-        try {
+        if(isset($this->getView()->Identity)){
+            $auth = $this->getView()->Identity;
+            $isAuthCheck = $auth->checkUrl($this->linkContent);
+        } else if(isset($this->getView()->Auth)){
             $auth = $this->getView()->Auth;
             $isAuthCheck = $auth->check($this->linkContent);
-        } catch (MissingHelperException $e) {
-            // pas de helper Auth
+        } else {
             $isAuthCheck = true;
         }
 

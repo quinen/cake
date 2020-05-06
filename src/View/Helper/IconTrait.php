@@ -9,6 +9,8 @@
 
 namespace QuinenCake\View\Helper;
 
+use Cake\ORM\Entity;
+
 /**
  *
  */
@@ -34,6 +36,8 @@ trait IconTrait
 
         if (\is_string($options)) {
             $options = ['text' => $options];
+        } else if($options instanceof Entity){
+            $options = $options->toArray();
         }
 
         $optionsDefaults = [
