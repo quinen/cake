@@ -187,7 +187,7 @@ trait LinkTrait
 
     private function linkCheckAccess()
     {
-        if(isset($this->getView()->Identity)){
+        if(isset($this->getView()->Identity) && method_exists($this->getView()->Identity,'checkUrl')){
             $auth = $this->getView()->Identity;
             $isAuthCheck = $auth->checkUrl($this->linkContent);
         } else if(isset($this->getView()->Auth)){
