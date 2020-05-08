@@ -15,7 +15,8 @@ trait Bs4NavbarTrait
             // light, dark
             'theme' => "light",
             'bg' => "light",
-            'classRight' => 'ml-auto align-items-center'
+            'classRight' => 'ml-auto align-items-center',
+            'isStickyTop' => false,
         ];
 
         $options += $optionsDefault;
@@ -24,7 +25,7 @@ trait Bs4NavbarTrait
 
         // expand
         if ($options['expand']) {
-            $expand = (is_string($options['expand']) ? '-' . options['expand'] : '');
+            $expand = (is_string($options['expand']) ? '-' . $options['expand'] : '');
             $options = $this->Html->addClass($options, 'navbar-expand' . $expand);
         }
 
@@ -36,6 +37,11 @@ trait Bs4NavbarTrait
         // color
         if ($options['bg']) {
             $options = $this->Html->addClass($options, 'bg-' . $options['bg']);
+        }
+
+        // is sticky-top
+        if ($options['isStickyTop']) {
+            $options = $this->Html->addClass($options, 'sticky-top');
         }
 
         $navbar = [];

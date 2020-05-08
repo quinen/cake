@@ -266,6 +266,7 @@ Quinen.Cake = Quinen.Cake || {};
 
         // si tab n'existe pas deja
         if ($("#t-" + options.id + "").length === 0) {
+
             var $ul = target.parents('.card').eq(options.parent).find('ul.card-header-tabs:first');
             var $divs = $('#c-' + $ul.attr('id') + '');
 
