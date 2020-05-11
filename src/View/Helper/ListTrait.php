@@ -25,6 +25,7 @@ trait ListTrait
             }
 
             // element
+            //debug([$content,$contentOptions]);
             list($content, $contentOptions) = $this->linkify($content, $contentOptions);
             return $this->tag('li', $content, $contentOptions + $optionsItem);
         })->toArray());

@@ -3,7 +3,7 @@
 namespace QuinenCake\View\Helper;
 
 use Cake\Utility\Text;
-
+/** @property HtmlHelper $Html  **/
 trait Bs4NavTrait
 {
 
@@ -111,7 +111,6 @@ trait Bs4NavTrait
 
         $tabContentDefault = [
             'tab' => false,
-            'link' => false,
             'content' => false,
             'isActive' => false,
             'isDisabled' => false,
@@ -140,6 +139,7 @@ trait Bs4NavTrait
 
             if ($tabContent['tab']) {
                 list($tab, $tabOptions) = $this->getContentOptions($tabContent['tab']);
+                //debug([$tab,$tabOptions]);
 
                 // tab.link
                 $linkOptions = [
@@ -171,23 +171,19 @@ trait Bs4NavTrait
                     'link' => ["#", $linkOptions]
                 ];
                 $reducer['tabs'][] = [$tab, $tabOptions];
-            } elseif ($tabContent['link']) {
-
-                $reducer['tabs'][] = $tabContent['link'];
             }
 
             if ($tabContent['content']) {
                 // content
                 list($content, $contentOptions) = $this->getContentOptions($tabContent['content']);
+                if(is_array($content)){
+                    debug($content);
+                }
+
                 $contentOptions += [
                     'id' => $tabContent['id'],
                     'class' => "tab-pane",
                 ];
-
-                $linkOptions = $this->addClassFromBooleanOptions(
-                    $linkOptions,
-                    ['active', 'disabled']
-                );
 
                 if ($tabContent['isActive']) {
                     $contentOptions = $this->addClass($contentOptions, 'active');

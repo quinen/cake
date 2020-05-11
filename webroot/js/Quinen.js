@@ -659,8 +659,25 @@ Quinen.Cake = Quinen.Cake || {};
     // synchronise les sous onglet ayant le meme nom
     this.listenOnClickTabName = function () {
         $('a[data-toggle]').on('shown.bs.tab', function (event) {
-            var name = event.target.dataset['name'];
+            // ouvre les onglets ayant le meme nom
+            let name = event.target.dataset['name'];
             $('a[data-name="' + name + '"]').tab('show');
+            // render ajax
+            let contentDiv = document.querySelectorAll(event.target.dataset['target'])[0];
+            let contentUrl = contentDiv.dataset['content'];
+            if (typeof contentUrl !== 'undefined' && contentDiv.dataset['rendered'] !== "true") {
+                // render inside div
+                $.ajax({
+                    url: contentUrl,
+                }).done(function (data, status, xhr) {
+                    contentDiv.innerHTML = data;
+                    contentDiv.dataset['rendered'] = true;
+                }).fail(function (xhr, status, error) {
+                    //console.log(arguments);
+                    contentDiv.innerHTML = xhr.responseText;
+                });
+
+            }
         })
     };
 
@@ -712,6 +729,7 @@ Quinen.Cake = Quinen.Cake || {};
         $('a[data-href]').on('click', function (event) {
             var link = event.target.dataset.link || 'ajax';
             link = link.charAt(0).toUpperCase() + link.slice(1);
+            console.log(link);
             $.ajax({
                 url: event.target.dataset.href,
                 beforeSend: function (xhr, settings) {
