@@ -24,7 +24,7 @@ var Quinen = Quinen || {};
 
     this.optionsDefault = function (obj, def) {
         obj = obj || {};
-        for (const k in def) {
+        for (let k in def) {
             if (typeof obj[k] === 'undefined') {
                 obj[k] = def[k];
             }
@@ -33,9 +33,7 @@ var Quinen = Quinen || {};
     };
 
     this.uuid = function () {
-        return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
-            (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-        );
+        return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
     };
 
     // "toto"   => ["toto",{}]
@@ -727,11 +725,13 @@ Quinen.Cake = Quinen.Cake || {};
 
     this.listenOnClickDataHref = function () {
         $('a[data-href]').on('click', function (event) {
-            var link = event.target.dataset.link || 'ajax';
+
+            let btn = event.currentTarget;
+            var link = btn.dataset.link || 'ajax';
             link = link.charAt(0).toUpperCase() + link.slice(1);
-            console.log(link);
+
             $.ajax({
-                url: event.target.dataset.href,
+                url: btn.dataset.href,
                 beforeSend: function (xhr, settings) {
                     Quinen.Cake['onBeforeSend' + link + 'Link'].apply(Quinen.Cake, [event, xhr])
                 }
