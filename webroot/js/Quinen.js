@@ -209,12 +209,18 @@ Quinen.Cake = Quinen.Cake || {};
 
     this.onSuccessAjaxLink = function ($event, data, status, xhr) {
         // we restore the old html upon returning
-        var $link = $($event.currentTarget);
+        let $link = $($event.currentTarget);
+
         if (data.length > 0) {
             $link.html(data);
         } else {
             $link.html($link.data('oldHtml'));
         }
+
+        if (typeof $event.currentTarget.dataset.renderResponse !== 'undefined') {
+            $($event.currentTarget.dataset.renderResponse).html(xhr.responseText);
+        }
+        this.onLoad();
     };
 
     this.onErrorAjaxLink = function ($event, xhr, status, error) {
@@ -732,6 +738,8 @@ Quinen.Cake = Quinen.Cake || {};
 
             $.ajax({
                 url: btn.dataset.href,
+                method: btn.dataset.method || 'GET',
+                data: btn.dataset.data || {},
                 beforeSend: function (xhr, settings) {
                     Quinen.Cake['onBeforeSend' + link + 'Link'].apply(Quinen.Cake, [event, xhr])
                 }
