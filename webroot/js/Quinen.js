@@ -588,7 +588,7 @@ Quinen.Cake = Quinen.Cake || {};
 
         $('[data-toggle="datetimepicker"]').each(function () {
             var $source = $(this);
-            var $target = $($source.data('date'));
+            var $target = $($source[0].dataset.date);
 
             // init from hidden
             var init = null;
