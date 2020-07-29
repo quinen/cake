@@ -274,9 +274,14 @@ tr.align-middle > td {
 .required > .select2-container > .selection > .select2-selection {
     border-left: var(--red) solid 3px;
 }
+
 /*
 .required > label:after {
     content: ' *';
     color: var(--red);
 }*/
+
+.modal-xxl {
+    max-width: 100%;
+}
 
