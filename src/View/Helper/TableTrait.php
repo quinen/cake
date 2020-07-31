@@ -32,7 +32,7 @@ trait TableTrait
             'isThead' => true,
             'isTfoot' => true,
             'theadOptions' => null,
-            'theadThOptions' => null,
+            'theadThOptions' => [],
             'tfootOptions' => [],
             'trOptions' => [],
             'empty' => 'Aucun resultat',
