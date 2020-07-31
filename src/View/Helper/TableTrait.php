@@ -32,6 +32,7 @@ trait TableTrait
             'isThead' => true,
             'isTfoot' => true,
             'theadOptions' => null,
+            'theadThOptions' => null,
             'tfootOptions' => [],
             'trOptions' => [],
             'empty' => 'Aucun resultat',
@@ -320,8 +321,9 @@ trait TableTrait
         }
 
         $labelsColspanned = $this->getTableTheadLabel($maps, $options);
-
+        debug($labelsColspanned);
         $thead[] = $this->tableHeaders($labelsColspanned, $options['theadOptions']);
+        debug($thead);
 
         return $this->tag('thead', implode($thead));
     }
@@ -375,6 +377,7 @@ trait TableTrait
 
     protected function getTableTheadLabel($maps, $options)
     {
+        debug(func_get_args());
 
         $labels = collection($maps)->reduce(function ($reducer, $map) use ($options) {
 
@@ -389,6 +392,13 @@ trait TableTrait
                 $reducer[] = ['&nbsp;' => false];
                 return $reducer;
             }
+
+            if (isset($options['theadThOptions']['class']) && $labelOptions['class'] === false) {
+                unset($labelOptions['class']);
+            }
+            $labelOptions += $options['theadThOptions'];
+
+            $labelOptions = array_merge($options['theadThOptions'], $labelOptions);
 
             if ($options['isSort'] && (!isset($map['isSort']) || $map['isSort'])) {
                 if (!is_scalar($field)) {
