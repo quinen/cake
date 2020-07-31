@@ -321,9 +321,7 @@ trait TableTrait
         }
 
         $labelsColspanned = $this->getTableTheadLabel($maps, $options);
-        debug($labelsColspanned);
         $thead[] = $this->tableHeaders($labelsColspanned, $options['theadOptions']);
-        debug($thead);
 
         return $this->tag('thead', implode($thead));
     }
@@ -377,8 +375,6 @@ trait TableTrait
 
     protected function getTableTheadLabel($maps, $options)
     {
-        debug(func_get_args());
-
         $labels = collection($maps)->reduce(function ($reducer, $map) use ($options) {
 
             if ($map['hide']) {
