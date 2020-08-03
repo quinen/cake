@@ -200,6 +200,7 @@ Quinen.Cake = Quinen.Cake || {};
 
     // ajax link
     this.onBeforeSendAjaxLink = function ($event, xhr) {
+        //console.log('onBeforeSendAjaxLink',arguments);
         // we store the old html for reprinting in case of
         var $link = $($event.currentTarget);
         $link.data('oldHtml', $link.html());
@@ -208,6 +209,7 @@ Quinen.Cake = Quinen.Cake || {};
     };
 
     this.onSuccessAjaxLink = function ($event, data, status, xhr) {
+        //console.log('onSuccessAjaxLink',arguments);
         // we restore the old html upon returning
         let $link = $($event.currentTarget);
 
@@ -404,6 +406,7 @@ Quinen.Cake = Quinen.Cake || {};
     // end tr link
 
     this.onBeforeSendModalLink = function ($event, xhr) {
+        //console.log('onBeforeSendModalLink',arguments);
         var $link = $($event.currentTarget);
 
         Quinen.Cake.onBeforeSendAjaxLink($event, xhr);
@@ -414,7 +417,7 @@ Quinen.Cake = Quinen.Cake || {};
     };
 
     this.onSuccessModalLink = function ($event, data, status, xhr) {
-
+        //console.log('onSuccessModalLink',arguments);
         $('#linkModal').find('.modal-body').html(data);
         $('#linkModal').modal({
             //backdrop: 'static'
@@ -730,7 +733,7 @@ Quinen.Cake = Quinen.Cake || {};
     };
 
     this.listenOnClickDataHref = function () {
-        $('a[data-href]').on('click', function (event) {
+        $('a[data-href]').off('click').on('click', function (event) {
 
             let btn = event.currentTarget;
             var link = btn.dataset.link || 'ajax';
